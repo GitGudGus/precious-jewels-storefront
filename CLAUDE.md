@@ -84,27 +84,32 @@ content in Shopify admin; we just render it — **no CMS**.
 pages work meanwhile; not a launch blocker. (Old `/account` deep links will 404 post-cutover —
 acceptable.)
 
-**Milestone 5 (Launch prep) — in progress.**
+**Milestone 5 (Launch prep) — code done, cutover pending (operator).**
 
-- PR `m5-launch-critical` (open) — `src/app/robots.ts`; `src/components/seo/JsonLd.tsx`
-  (Organization in layout, Breadcrumb + Product on PDP/collection); `alternates.canonical` on
+- PR #11 `m5-launch-critical` (merged) — `src/app/robots.ts`; `src/components/seo/JsonLd.tsx`
+  (`Organization` in layout, `Breadcrumb` + `Product` on PDP/collection); `alternates.canonical` on
   every route; `next.config` redirects (`/blogs/news*` → `/journal*`, nested collection-product
   URLs, `/cart` → `/`, `/search` → `/collections`); a11y (skip link + `#main`, global
   `:focus-visible` ring); `reshape.ts` `normalizeCheckoutUrl`.
-- PR `m5-monitoring` (next) — Vercel Analytics + Speed Insights, `@sentry/nextjs` (env-gated),
-  `docs/launch-checklist.md`.
+- PR `m5-monitoring` (open) — `@vercel/analytics` + `@vercel/speed-insights` in the layout;
+  `@sentry/nextjs` **env-gated** (`src/instrumentation.ts` + `src/sentry.{server,edge}.config.ts` +
+  `src/instrumentation-client.ts` + `src/app/global-error.tsx`; `next.config` only calls
+  `withSentryConfig` — imported from `@sentry/nextjs/config` in v10 — when `SENTRY_AUTH_TOKEN` is
+  set, so CI/local stay on the plain Turbopack-clean path); `docs/launch-checklist.md`.
 
-**⚠️ The checkout-domain problem (must be solved at cutover, not in code).** Shopify returns
-`cart.checkoutUrl` on the shop's **primary domain** (`preciousjewels.co/cart/c/…`). Rewriting the
-host to `*.myshopify.com` **does not work today** — Shopify 301s `*.myshopify.com/cart/c/*` back to
-the primary domain. So the moment `preciousjewels.co` DNS points at Vercel, checkout 404s unless
-Shopify is serving checkout from a different host. Fix path: at cutover the owner removes
-`preciousjewels.co` from Shopify's domains, checks what host checkout then resolves to, and sets
-`SHOPIFY_CHECKOUT_DOMAIN` (env, consumed by `normalizeCheckoutUrl`) in Vercel to that host. Leave
-the env var unset until then — Shopify's own URL works while it owns the apex. Full runbook:
-`docs/launch-checklist.md`.
+**⚠️ Checkout domain at cutover — the standard headless fix, in `docs/launch-checklist.md` §0.**
+A headless storefront and Shopify checkout can't share the exact same domain. Shopify returns
+`cart.checkoutUrl` on the primary domain (`preciousjewels.co/cart/c/…`); rewriting to
+`*.myshopify.com` doesn't help (Shopify 301s it back to the primary). Fix: owner connects
+**`checkout.preciousjewels.co`** in Shopify admin (CNAME → `shops.myshopify.com`), sets it as the
+**primary** domain, points the apex + `www` at Vercel; then set `SHOPIFY_CHECKOUT_DOMAIN=checkout.preciousjewels.co`
+in Vercel (consumed by `normalizeCheckoutUrl`). This is the documented headless pattern, not a
+stopgap. Leave `SHOPIFY_CHECKOUT_DOMAIN` unset until the subdomain exists.
 
-Next: finish M5 (PR `m5-monitoring` + the owner's cutover checklist), then M4 (search) / M3b.
+Next: merge `m5-monitoring`, then the owner works `docs/launch-checklist.md`. Then M4 (search) / M3b
+(accounts). Backlog: Instagram → journal feed (see `instagram-to-blog-idea` memory), real OG image
+
+- logo, contact form, newsletter wiring.
 
 Done:
 

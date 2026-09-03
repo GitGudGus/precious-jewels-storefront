@@ -56,7 +56,10 @@ cp .env.example .env.local  # then fill in your Shopify tokens
 npm run dev                 # http://localhost:3000
 ```
 
-Never commit `.env.local`. `.env.example` holds the variable names with blank values.
+Never commit `.env.local`. `.env.example` documents every variable. Only the two
+`SHOPIFY_*` are required for local dev; the rest (`SHOPIFY_CHECKOUT_DOMAIN`, `NEXT_PUBLIC_SENTRY_DSN`,
+`SENTRY_*`) are launch-time and inert when blank — see
+[docs/launch-checklist.md](docs/launch-checklist.md).
 
 **Getting the Shopify values:** install the **Headless** channel from the Shopify App Store, click
 **Create storefront**, and copy the public Storefront access token it generates (no OAuth/custom
