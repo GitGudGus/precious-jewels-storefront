@@ -243,10 +243,35 @@ function reshapeCartLine(line: RawCartLine): CartLine {
   };
 }
 
+/**
+ * Shopify returns `checkoutUrl` on the shop's *primary* domain
+ * (`preciousjewels.co/cart/c/…`). At the Milestone 5 cutover, once
+ * `preciousjewels.co` points at this Next app, that URL would 404 — Shopify must
+ * serve checkout from a different host.
+ *
+ * `SHOPIFY_CHECKOUT_DOMAIN` (env) overrides the host when set. **Leave it unset
+ * today** (Shopify's own URL works while it still owns the apex). At cutover, per
+ * `docs/launch-checklist.md`: remove `preciousjewels.co` from Shopify's domains,
+ * confirm which host checkout then resolves to (usually `*.myshopify.com` or a
+ * `checkout.` subdomain), and set this env var to it in Vercel. Server-only path.
+ */
+function normalizeCheckoutUrl(url: string): string {
+  const domain = process.env.SHOPIFY_CHECKOUT_DOMAIN;
+  if (!domain) return url;
+  try {
+    const parsed = new URL(url);
+    parsed.protocol = 'https:';
+    parsed.host = domain;
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 export function reshapeCart(cart: RawCart): Cart {
   return {
     id: cart.id,
-    checkoutUrl: cart.checkoutUrl,
+    checkoutUrl: normalizeCheckoutUrl(cart.checkoutUrl),
     totalQuantity: cart.totalQuantity,
     cost: {
       subtotalAmount: reshapeMoney(cart.cost.subtotalAmount),

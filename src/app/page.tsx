@@ -121,22 +121,22 @@ export default async function Home() {
 
       <Section
         tone="ink"
-        innerClassName="flex flex-col items-center gap-5 py-20 text-center"
+        innerClassName="on-ink flex flex-col items-center gap-5 py-20 text-center"
       >
         <h2 className="max-w-xl text-2xl md:text-3xl">
           Join the list for first access
         </h2>
-        <p className="max-w-sm text-sm text-ink-invert/70">
+        <p className="max-w-sm text-sm text-ink-invert/75">
           New drops, restocks, and the occasional discount. No spam.
         </p>
         {/* Visual only for now — wiring email capture (Shopify marketing
             consent) is a later milestone. */}
-        <div className="mt-2 flex w-full max-w-sm border border-ink-invert/30">
+        <div className="mt-2 flex w-full max-w-sm border border-ink-invert/40">
           <input
             type="email"
             placeholder="Email address"
             aria-label="Email address"
-            className="flex-1 bg-transparent px-4 py-3 text-sm text-ink-invert placeholder:text-ink-invert/50 focus:outline-none"
+            className="flex-1 bg-transparent px-4 py-3 text-sm text-ink-invert placeholder:text-ink-invert/60"
           />
           <button
             type="button"

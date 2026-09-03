@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { CollectionProducts } from '@/components/collection/CollectionProducts';
+import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { Prose } from '@/components/ui/Prose';
 import { Section } from '@/components/ui/Section';
 import {
@@ -35,6 +36,7 @@ export async function generateMetadata({
     description:
       collection.descriptionHtml.replace(/<[^>]+>/g, '').trim() ||
       `Shop ${collection.title} at Precious Jewels.`,
+    alternates: { canonical: `/collections/${handle}` },
   };
 }
 
@@ -53,6 +55,13 @@ export default async function CollectionPage({
 
   return (
     <Section tone="bg" innerClassName="space-y-10">
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Home', path: '/' },
+          { name: 'Collections', path: '/collections' },
+          { name: collection.title, path: `/collections/${handle}` },
+        ]}
+      />
       <header className="space-y-3 text-center">
         <h1 className="text-3xl md:text-4xl">{collection.title}</h1>
         {collection.descriptionHtml && (

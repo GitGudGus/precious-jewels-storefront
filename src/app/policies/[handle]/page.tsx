@@ -19,7 +19,10 @@ export async function generateMetadata({
   const { handle } = await params;
   const policy = await getPolicy(handle);
   if (!policy) return {};
-  return { title: policy.title };
+  return {
+    title: policy.title,
+    alternates: { canonical: `/policies/${handle}` },
+  };
 }
 
 export default async function PolicyPage({
