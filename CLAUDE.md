@@ -19,8 +19,24 @@ cheap later.
 
 ## Current status (as of 2026-09-03)
 
-**Milestone 0 (Foundations) — complete.** Storefront is scaffolded, connected to Shopify, live on
-Vercel, CI is green, and `main` is protected. Next: Milestone 1 (catalog/browsing).
+**Milestone 0 (Foundations) — complete.** Storefront scaffolded, connected to Shopify, live on
+Vercel, CI green, `main` protected.
+
+**Milestone 1 (Catalog / browsing) — in progress, 3 staged PRs:**
+
+- PR #1 `m1-data-layer` — **merged.** `src/lib/shopify/` data layer: `types.ts`, `fragments.ts`,
+  `queries/{products,collections}.ts`, `reshape.ts` (raw→domain), `request.ts` (`storefront<T>()`
+  helper — the `getShopName` throw-on-error contract, factored out), `products.ts` / `collections.ts`
+  (thin ops: `getProduct`, `getProducts`, `getProductHandles`, `getCollections`, `getCollection`,
+  `getCollectionProducts`, `getCollectionHandles`), `format.ts`, barrel `index.ts`.
+- PR #2 `m1-browse` — **merged.** Header/Footer in the layout, homepage rebuilt, `/collections`
+  (empty collections filtered out), `/collections/[handle]` (SSG, ISR 900s). Sort + "load more"
+  are client-side against a `'use server'` action.
+- PR #3 `m1-pdp` — **open.** `/products/[handle]` (SSG, ISR 900s), `ProductPurchasePanel` /
+  `VariantSelector` / `ProductGallery`, JSON-LD + OG metadata.
+
+Next: finish M1 (Lighthouse check, optional metafield setup), then Milestone 2 (cart + checkout
+handoff).
 
 Done:
 
@@ -59,8 +75,8 @@ Done:
   during static prerender of `/`; root cause was the Vercel env var value, fixed by re-entering it
   cleanly (see gotcha below).
 
-- **Repo made public** (`gh repo edit --visibility public`) — GitHub branch protection *and*
-  rulesets both require GitHub Pro on a *private* repo (confirmed via API, HTTP 403). Going public
+- **Repo made public** (`gh repo edit --visibility public`) — GitHub branch protection _and_
+  rulesets both require GitHub Pro on a _private_ repo (confirmed via API, HTTP 403). Going public
   unlocks rulesets on the free plan and gives unlimited Actions minutes. Verified clean before
   flipping: `.env.local` never tracked, the Storefront token appears nowhere in git history, only
   `.env.example` (blank values) is committed. (The public Storefront token is designed for
@@ -112,21 +128,56 @@ changes this flow again, update both places, not just one.
   expected and desirable (surfaced cleanly as `GraphQL Client: Unauthorized` during local testing
   with placeholder values, rather than failing silently).
 - **`fetch failed` vs `Unauthorized` when diagnosing a bad Shopify config:** `GraphQL Client:
-  Unauthorized` means the request reached Shopify and the *token* was rejected. `GraphQL Client:
-  fetch failed` means the request never got there — almost always a malformed `SHOPIFY_STORE_DOMAIN`
+Unauthorized` means the request reached Shopify and the _token_ was rejected. `GraphQL Client:
+fetch failed` means the request never got there — almost always a malformed `SHOPIFY_STORE_DOMAIN`
   (protocol prefix, trailing slash, or a stray space/newline from pasting into a dashboard field).
   Hit this on the first Vercel deploy; the value needed to be exactly `shop-precious-jewels.myshopify.com`.
 - The homepage (`/`) is a plain server component with no dynamic APIs, so `next build` **statically
   prerenders it at build time** — the Shopify `getShopName()` call runs on the build machine (CI and
-  Vercel), not per-request. That's why a bad env var fails the *build* rather than just a request.
-  Fine for now (shop name never changes); revisit with `revalidate`/dynamic rendering when the
-  homepage shows real catalog data in M1.
+  Vercel), not per-request. That's why a bad env var fails the _build_ rather than just a request.
+
+### M1 gotchas
+
+- **The public Storefront token can't read inventory quantities.** `totalInventory` and
+  `Variant.quantityAvailable` return `ACCESS_DENIED` (needs the `unauthenticated_read_product_inventory`
+  scope, toggled on the Headless storefront in Shopify admin). `availableForSale` (product + variant)
+  works — that's all M1 uses. Revisit if M1+ wants "low stock" / "made to order" badges.
+- **No `custom.*` metafields exist in the store.** The PDP queries `custom.materials` / `custom.care`
+  / `custom.sizing` and renders each section only if it has content, so it degrades cleanly. Real
+  content needs metafield _definitions_ + values added in Shopify admin.
+- **`notFound()` on a dynamically-rendered route returns a soft 404 (HTTP 200 + the not-found UI).**
+  Reading the `searchParams` prop in a Server Component forces full dynamic rendering, which triggers
+  this. Fix pattern used here: keep list/detail routes **statically generated** (`generateStaticParams`
+  - `export const revalidate`), and move anything URL-param-driven (collection sort, selected variant)
+    to the **client** — read via `useSyncExternalStore` / write via `history.replaceState`. Then
+    `notFound()` for real unknowns is a hard 404.
+- **`dynamicParams = false` on `/collections/[handle]` and `/products/[handle]`.** Only handles that
+  exist at build time are served; a new product/collection needs a redeploy to appear, but unknown
+  URLs get a proper 404 (better for SEO than soft 404s). ~16 collections + ~350 products prerender
+  in a few seconds, so the build cost is negligible. If catalog churn makes redeploys annoying,
+  flip to `true` and add `noindex` handling for the soft-404 case.
+- Shopify product images are on `cdn.shopify.com` — `next.config.ts` has an
+  `images.remotePatterns` entry (`/s/files/**`). New image hosts need adding there.
+- Some products have **numeric handles** (`/products/4`, `/products/316`) — real Shopify data, works
+  fine as a route param, just looks odd.
+- Storefront API `2025-10`: use `product(handle:)` / `collection(handle:)` (not the deprecated
+  `*ByHandle`); the `nodes` connection shorthand works; product options are
+  `options { id name optionValues { name } }`. A product with no real variants shows one option
+  `Title: ["Default Title"]` — `reshape.ts` strips it so `product.options.length === 0` means
+  "no variant picker".
 
 ## Conventions to keep following
 
 - All Shopify calls live under `src/lib/shopify/` — client, one query file per concern
-  (`queries/shop.ts` so far), and a thin function per operation (`getShopName()` pattern) that
-  throws on `errors` or missing `data` rather than returning `undefined` silently.
+  (`queries/{shop,products,collections}.ts`), shared GraphQL fragments in `fragments.ts`, and a thin
+  function per operation that goes through `storefront<T>()` in `request.ts` (throws on `errors` /
+  missing `data`). Raw GraphQL shapes never escape the folder — `reshape.ts` converts them to the
+  `types.ts` domain shapes at the boundary. Routes/components import from `@/lib/shopify` (barrel).
+- Routes that render Shopify data set `export const revalidate = 900` (ISR). Dynamic-param routes
+  add `generateStaticParams` + `dynamicParams = false`. The data layer itself stays cache-agnostic.
+- Server Components fetch; interactivity (variant picker, sort, load-more) is Client Components that
+  call `'use server'` actions or read the URL client-side — never a Server Component reading
+  `searchParams` (see the soft-404 gotcha).
 - Prettier formats everything (`npm run format` / `npm run format:check`); ESLint defers to it via
   `eslint-config-prettier` — don't add formatting rules to `eslint.config.mjs`.
 - Docs (`README.md`, `ROADMAP.md`, `docs/architecture.md`) are meant to be kept current as the
@@ -142,13 +193,14 @@ changes this flow again, update both places, not just one.
 
 ## Next steps (pick up here)
 
-M0 is done. Start **Milestone 1 (catalog/browsing)** — see ROADMAP.md M1:
+1. Merge PR #3 (`m1-pdp`). Then M1's code is done.
+2. Close out M1 DoD: run Lighthouse mobile on a deployed PDP (target ≥ 90); optionally have the
+   user define `custom.materials` / `custom.care` / `custom.sizing` metafields in Shopify admin so
+   the PDP detail sections populate.
+3. Milestone 2 — cart + checkout handoff. See ROADMAP.md M2. Cart functions go in
+   `src/lib/shopify/` (`createCart`, `addCartLines`, …); `cartId` in a cookie; slide-out drawer;
+   "Checkout" → Shopify's `checkoutUrl`. The disabled add-to-cart button in `ProductPurchasePanel`
+   is the hook point.
 
-1. Data layer in `src/lib/shopify/` — queries + thin functions for collections and for a single
-   product with all variants/images (follow the existing `queries/shop.ts` + `shop.ts` pattern:
-   one query file per concern, a function that throws on `errors`/missing `data`).
-2. Browse UI (collection listing, product grid) and the product detail page, responsive.
-
-Uncommitted as of end of this session: doc updates to CLAUDE.md, ROADMAP.md, README.md, plus the
-pre-existing `.gitignore` / `.vscode/extensions.json` changes. Nothing committed (per project
-convention — user commits).
+The M1 branches also each carried a small docs commit alongside the code commit (M0 wrap-up on
+PR #1, M1 DoD + gotchas on PR #3). Pattern: code commit + docs commit per PR.

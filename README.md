@@ -12,9 +12,11 @@ shipping, POS). This repo is the customer-facing website.
 
 ## Status
 
-✅ Milestone 0 — done. App scaffolded, connected to the real Shopify store via `lib/shopify/`,
-live on Vercel (`precious-jewels.vercel.app`), CI green, `main` protected. Now on Milestone 1
-(catalog/browsing). See the roadmap.
+✅ Milestone 0 — done. Live on Vercel (`precious-jewels.vercel.app`), CI green, `main` protected.
+
+🚧 Milestone 1 (catalog/browsing) — in progress. Data layer + browse routes merged; product
+detail page in review. Routes: `/`, `/collections`, `/collections/[handle]`, `/products/[handle]`
+— all statically generated with 15-minute ISR. See the roadmap.
 
 ## Stack
 
