@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { CartButton } from '@/components/cart/CartButton';
 import { getCollections } from '@/lib/shopify';
 
 /**
@@ -49,25 +50,7 @@ export async function Header() {
           </Link>
         </nav>
 
-        {/* Cart handoff arrives in Milestone 2. */}
-        <span
-          aria-label="Cart (coming soon)"
-          className="text-neutral-400 dark:text-neutral-600"
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            aria-hidden="true"
-          >
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-            <path d="M3 6h18" />
-            <path d="M16 10a4 4 0 0 1-8 0" />
-          </svg>
-        </span>
+        <CartButton />
       </div>
 
       <nav className="flex gap-4 overflow-x-auto border-t border-neutral-200 px-4 py-2 text-sm text-neutral-600 md:hidden dark:border-neutral-800 dark:text-neutral-300">

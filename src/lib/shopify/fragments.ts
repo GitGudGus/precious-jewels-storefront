@@ -103,3 +103,51 @@ export const collectionFragment = /* GraphQL */ `
     }
   }
 `;
+
+export const cartFragment = /* GraphQL */ `
+  fragment Cart on Cart {
+    id
+    checkoutUrl
+    totalQuantity
+    cost {
+      subtotalAmount {
+        ...Money
+      }
+      totalAmount {
+        ...Money
+      }
+    }
+    lines(first: 100) {
+      nodes {
+        id
+        quantity
+        cost {
+          totalAmount {
+            ...Money
+          }
+        }
+        merchandise {
+          ... on ProductVariant {
+            id
+            title
+            availableForSale
+            price {
+              ...Money
+            }
+            image {
+              ...Image
+            }
+            selectedOptions {
+              name
+              value
+            }
+            product {
+              handle
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+`;

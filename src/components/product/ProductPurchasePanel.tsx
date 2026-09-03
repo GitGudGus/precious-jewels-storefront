@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
+import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { Price } from '@/components/Price';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { VariantSelector } from '@/components/product/VariantSelector';
@@ -130,19 +131,10 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
           onSelect={onSelect}
         />
 
-        <div className="space-y-2">
-          <button
-            type="button"
-            disabled
-            title="Checkout arrives in Milestone 2"
-            className="w-full rounded-full bg-neutral-950 px-6 py-3 text-sm font-medium text-white disabled:opacity-60 dark:bg-white dark:text-neutral-950"
-          >
-            {available ? 'Add to cart' : 'Sold out'}
-          </button>
-          <p className="text-xs text-neutral-400">
-            Cart and checkout land in the next milestone.
-          </p>
-        </div>
+        <AddToCartButton
+          variantId={selectedVariant?.id}
+          available={available}
+        />
       </div>
     </div>
   );
