@@ -29,7 +29,9 @@ palette, full-bleed section bands. Tokens in `src/app/globals.css`, primitives i
 policy pages render from Shopify admin; `/journal` blog shell; `sitemap.xml`. Customer accounts
 (M3b) deferred post-launch.
 
-🚧 Next: Milestone 4 (search, merchandising) or Milestone 5 (launch prep).
+🚧 Milestone 5 (launch prep) — in progress. SEO (sitemap, robots, JSON-LD, canonicals), old-theme
+redirects, accessibility pass, analytics + error monitoring. Cutover runbook:
+[docs/launch-checklist.md](docs/launch-checklist.md).
 
 ## Stack
 
