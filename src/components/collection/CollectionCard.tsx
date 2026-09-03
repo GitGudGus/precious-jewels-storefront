@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import type { Collection, ShopImage } from '@/lib/shopify';
+import type { Collection, ShopImage } from '@/lib/shopify/types';
 
 const CARD_SIZES = '(min-width: 768px) 33vw, 100vw';
 
@@ -21,7 +21,7 @@ export function CollectionCard({
   return (
     <Link
       href={`/collections/${collection.handle}`}
-      className="group relative block aspect-[4/5] overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900"
+      className="group relative block aspect-4/5 overflow-hidden bg-surface"
     >
       {image && (
         <Image
@@ -29,11 +29,11 @@ export function CollectionCard({
           alt={image.altText ?? collection.title}
           fill
           sizes={CARD_SIZES}
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-      <h3 className="absolute bottom-4 left-4 text-lg font-medium text-white">
+      <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+      <h3 className="absolute bottom-4 left-4 font-serif text-lg tracking-[0.12em] text-white uppercase">
         {collection.title}
       </h3>
     </Link>

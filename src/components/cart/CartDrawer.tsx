@@ -21,13 +21,13 @@ function QuantityStepper({
   onChange: (quantity: number) => void;
 }) {
   return (
-    <div className="inline-flex items-center rounded-full border border-neutral-300 text-sm dark:border-neutral-700">
+    <div className="inline-flex items-center rounded-pill border border-line text-sm">
       <button
         type="button"
         aria-label="Decrease quantity"
         disabled={disabled}
         onClick={() => onChange(line.quantity - 1)}
-        className="px-2.5 py-1 disabled:opacity-40"
+        className="px-3 py-1 disabled:opacity-40"
       >
         −
       </button>
@@ -37,7 +37,7 @@ function QuantityStepper({
         aria-label="Increase quantity"
         disabled={disabled}
         onClick={() => onChange(line.quantity + 1)}
-        className="px-2.5 py-1 disabled:opacity-40"
+        className="px-3 py-1 disabled:opacity-40"
       >
         +
       </button>
@@ -78,33 +78,33 @@ export function CartDrawer() {
     >
       <div
         onClick={closeDrawer}
-        className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/30 transition-opacity duration-300 ${
           isDrawerOpen ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
       <aside
         aria-label="Cart"
-        className={`absolute top-0 right-0 flex h-full w-full max-w-md flex-col bg-white shadow-xl transition-transform duration-300 dark:bg-neutral-950 ${
+        className={`absolute top-0 right-0 flex h-full w-full max-w-md flex-col border-l border-line bg-bg transition-transform duration-300 ${
           isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <header className="flex items-center justify-between border-b border-neutral-200 px-5 py-4 dark:border-neutral-800">
-          <h2 className="text-sm font-medium tracking-wide uppercase">
+        <header className="flex items-center justify-between border-b border-line px-6 py-5">
+          <h2 className="font-serif text-lg tracking-[0.14em] uppercase">
             Cart{cart?.totalQuantity ? ` (${cart.totalQuantity})` : ''}
           </h2>
           <button
             type="button"
             onClick={closeDrawer}
             aria-label="Close cart"
-            className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            className="text-ink-muted transition-colors hover:text-ink"
           >
             ✕
           </button>
         </header>
 
         {warnings.length > 0 && (
-          <div className="border-b border-amber-200 bg-amber-50 px-5 py-3 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200">
+          <div className="border-b border-line bg-surface px-6 py-3 text-xs text-ink-muted">
             {warnings.map((warning) => (
               <p key={`${warning.target}:${warning.code}`}>{warning.message}</p>
             ))}
@@ -112,12 +112,12 @@ export function CartDrawer() {
         )}
 
         {lines.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-            <p className="text-neutral-500">Your cart is empty.</p>
+          <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
+            <p className="text-sm text-ink-muted">Your cart is empty.</p>
             <Link
               href="/collections"
               onClick={closeDrawer}
-              className="rounded-full border border-neutral-300 px-5 py-2 text-sm hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900"
+              className="border border-ink px-6 py-2.5 text-xs tracking-[0.15em] uppercase transition-colors hover:bg-ink hover:text-ink-invert"
             >
               Continue shopping
             </Link>
@@ -125,7 +125,7 @@ export function CartDrawer() {
         ) : (
           <>
             <ul
-              className={`flex-1 divide-y divide-neutral-200 overflow-y-auto px-5 dark:divide-neutral-800 ${
+              className={`flex-1 divide-y divide-line overflow-y-auto px-6 ${
                 isPending ? 'opacity-60' : ''
               }`}
             >
@@ -135,11 +135,11 @@ export function CartDrawer() {
                   merchandise.variantTitle &&
                   merchandise.variantTitle !== 'Default Title';
                 return (
-                  <li key={line.id} className="flex gap-4 py-4">
+                  <li key={line.id} className="flex gap-4 py-5">
                     <Link
                       href={`/products/${merchandise.productHandle}`}
                       onClick={closeDrawer}
-                      className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-900"
+                      className="relative h-24 w-20 shrink-0 overflow-hidden bg-surface"
                     >
                       {merchandise.image && (
                         <Image
@@ -155,22 +155,22 @@ export function CartDrawer() {
                       )}
                     </Link>
 
-                    <div className="flex flex-1 flex-col gap-1.5">
+                    <div className="flex flex-1 flex-col gap-2">
                       <div className="flex justify-between gap-3 text-sm">
                         <Link
                           href={`/products/${merchandise.productHandle}`}
                           onClick={closeDrawer}
-                          className="font-medium hover:underline"
+                          className="hover:underline"
                         >
                           {merchandise.productTitle}
                         </Link>
                         <Price
                           min={line.cost.totalAmount}
-                          className="shrink-0 text-neutral-600 dark:text-neutral-300"
+                          className="shrink-0 text-ink-muted"
                         />
                       </div>
                       {showVariant && (
-                        <p className="text-xs text-neutral-500">
+                        <p className="text-xs text-ink-muted">
                           {merchandise.variantTitle}
                         </p>
                       )}
@@ -186,7 +186,7 @@ export function CartDrawer() {
                           type="button"
                           onClick={() => removeItem(line.id)}
                           disabled={isPending}
-                          className="text-xs text-neutral-500 underline hover:text-neutral-900 disabled:opacity-40 dark:hover:text-neutral-100"
+                          className="text-xs text-ink-muted underline transition-colors hover:text-ink disabled:opacity-40"
                         >
                           Remove
                         </button>
@@ -197,20 +197,18 @@ export function CartDrawer() {
               })}
             </ul>
 
-            <footer className="space-y-4 border-t border-neutral-200 px-5 py-4 dark:border-neutral-800">
+            <footer className="space-y-4 border-t border-line px-6 py-5">
               {cart && <FreeShippingBar subtotal={cart.cost.subtotalAmount} />}
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Subtotal</span>
-                <span className="font-medium">
-                  {cart && formatPrice(cart.cost.subtotalAmount)}
-                </span>
+                <span className="text-ink-muted">Subtotal</span>
+                <span>{cart && formatPrice(cart.cost.subtotalAmount)}</span>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-ink-muted">
                 Shipping and taxes calculated at checkout.
               </p>
               <a
                 href={cart?.checkoutUrl}
-                className="block w-full rounded-full bg-neutral-950 px-6 py-3 text-center text-sm font-medium text-white hover:opacity-90 dark:bg-white dark:text-neutral-950"
+                className="block w-full bg-ink px-6 py-3.5 text-center text-xs tracking-[0.15em] text-ink-invert uppercase transition-colors hover:bg-ink/85"
               >
                 Checkout
               </a>

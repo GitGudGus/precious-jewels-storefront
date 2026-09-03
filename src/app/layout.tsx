@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Jost, Ovo } from 'next/font/google';
 import './globals.css';
 
 import { CartDrawer } from '@/components/cart/CartDrawer';
@@ -7,31 +7,39 @@ import { CartProvider } from '@/components/cart/CartProvider';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const ovo = Ovo({
+  weight: '400',
   subsets: ['latin'],
+  variable: '--font-ovo',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const jost = Jost({
   subsets: ['latin'],
+  variable: '--font-jost',
 });
 
 export const metadata: Metadata = {
-  title: 'Precious Jewels',
-  description: 'Gold-filled, 18k gold, and silver jewelry.',
+  metadataBase: new URL('https://precious-jewels.vercel.app'),
+  title: {
+    default: 'Precious Jewels',
+    template: '%s · Precious Jewels',
+  },
+  description:
+    'Gold-filled, 18k gold, and silver jewelry from Miami. Tarnish resistant, hypoallergenic, nickel free.',
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${ovo.variable} ${jost.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <CartProvider>
           <Header />
-          <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
+          {/* PR3/PR4 pages render full-bleed <Section> bands; until then this
+              wrapper keeps the existing pages padded. */}
+          <main className="mx-auto w-full max-w-page flex-1 px-6 py-10 md:px-10">
             {children}
           </main>
           <Footer />

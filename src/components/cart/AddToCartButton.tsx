@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/Button';
+
 import { useCart } from './CartProvider';
 
 export function AddToCartButton({
@@ -13,13 +15,13 @@ export function AddToCartButton({
   const disabled = !variantId || !available || isPending;
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="primary"
       disabled={disabled}
       onClick={() => variantId && addItem(variantId)}
-      className="w-full rounded-full bg-neutral-950 px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-neutral-950"
+      className="w-full"
     >
       {!available ? 'Sold out' : isPending ? 'Adding…' : 'Add to cart'}
-    </button>
+    </Button>
   );
 }

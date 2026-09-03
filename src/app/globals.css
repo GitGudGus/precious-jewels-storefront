@@ -1,26 +1,83 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/**
+ * Moonstone design tokens. One warm-light palette (no dark mode). Sharp corners
+ * everywhere; the only rounded thing in the whole UI is the variant pill.
+ */
+@theme {
+  --color-bg: #fffdf8; /* warm cream — the page */
+  --color-surface: #f5efe5; /* sand — cards, alternating bands */
+  --color-blush: #fff6f9; /* rare accent band */
+  --color-ink: #000000; /* text, buttons, hairlines */
+  --color-ink-muted: #5c574e; /* secondary text */
+  --color-ink-invert: #fffdf8; /* text/labels on ink */
+  --color-line: rgba(0, 0, 0, 0.12); /* hairline borders */
+
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-ovo), Georgia, 'Times New Roman', serif;
+
+  --container-page: 75rem; /* 1200px — generates max-w-page */
+
+  --radius-pill: 9999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Reset a few Tailwind defaults to the Moonstone character. */
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    line-height: 1.15;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-ink-invert);
+  }
+
+  a {
+    text-underline-offset: 0.2em;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+/* Scroll-reveal: opacity + small rise, applied once via IntersectionObserver
+   (src/components/ui/Reveal.tsx). No-op under reduced motion. */
+@layer components {
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 600ms ease,
+      transform 600ms ease;
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }
