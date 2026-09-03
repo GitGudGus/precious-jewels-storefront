@@ -12,7 +12,7 @@ shipping, POS). This repo is the customer-facing website.
 
 ## Status
 
-✅ Milestone 0 — done. Live on Vercel (`precious-jewels.vercel.app`), CI green, `main` protected.
+✅ Milestone 0 — done. Live on Vercel, CI green, `main` protected.
 
 ✅ Milestone 1 (catalog/browsing) — done. `/`, `/collections`, `/collections/[handle]`,
 `/products/[handle]` — statically generated with 15-minute ISR. Variant selector, gallery, SEO
@@ -29,9 +29,11 @@ palette, full-bleed section bands. Tokens in `src/app/globals.css`, primitives i
 policy pages render from Shopify admin; `/journal` blog shell; `sitemap.xml`. Customer accounts
 (M3b) deferred post-launch.
 
-🚧 Milestone 5 (launch prep) — in progress. SEO (sitemap, robots, JSON-LD, canonicals), old-theme
-redirects, accessibility pass, analytics + error monitoring. Cutover runbook:
-[docs/launch-checklist.md](docs/launch-checklist.md).
+✅ Milestone 5 (launch prep) — code done. SEO (sitemap, robots, JSON-LD, canonicals), old-theme
+redirects, accessibility pass, Vercel Analytics + Speed Insights, env-gated Sentry. Remaining is
+operator work — the cutover runbook is [docs/launch-checklist.md](docs/launch-checklist.md).
+
+⏭️ Next build milestone: M4 (search & merchandising) or M3b (customer accounts).
 
 ## Stack
 

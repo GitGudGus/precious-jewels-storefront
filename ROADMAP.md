@@ -7,6 +7,11 @@ This document is written for a beginner developer. Each milestone tells you the 
 **why it matters**, **what you build**, **what you learn**, and a **definition of done** so you
 always know when to move on.
 
+> **Status (2026-09-03):** M0, M1, M2, M3a, the Moonstone design pass, and M5's code are all
+> merged to `main`. What's left before launch is operator work — `docs/launch-checklist.md`.
+> Next build milestone: **M4** (search) or **M3b** (customer accounts, deferred from M3).
+> Detailed state + working process: `CLAUDE.md`.
+
 ---
 
 ## 1. The big picture
@@ -371,8 +376,9 @@ operator runbook: [docs/launch-checklist.md](docs/launch-checklist.md).
 
 **Definition of done** (operator, at cutover)
 
-- [ ] `preciousjewels.co` serves the new storefront (DNS → Vercel; remove from Shopify domains;
-      set `SHOPIFY_CHECKOUT_DOMAIN` to the host checkout resolves to)
+- [ ] `preciousjewels.co` serves the new storefront (set Shopify primary domain →
+      `shop-precious-jewels.myshopify.com`, then point apex + `www` DNS at Vercel, back-to-back —
+      see `docs/launch-checklist.md` §0/§2)
 - [ ] A real customer order completes and appears in Shopify with correct tax + shipping
 - [ ] Sentry is receiving events; you get an alert on a test error (add `NEXT_PUBLIC_SENTRY_DSN`)
 - [ ] Search Console shows the sitemap accepted, no coverage errors
