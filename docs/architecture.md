@@ -36,11 +36,11 @@ the storefront. A second system (Django wholesale portal) is added in Phase 2.
 
 ## Boundaries
 
-| System | Owns | Does NOT own |
-|---|---|---|
-| Shopify | money, inventory, orders, tax, shipping, POS, payment methods | look and feel, content, wholesale pricing rules |
-| Storefront (this repo) | every retail pixel, SEO, performance, cart UX | payment, checkout, order data (reads only) |
-| Wholesale portal (Phase 2) | buyer approval, trade pricing, MOQ rules, invoices | fulfilment, inventory (delegates to Shopify via draft orders) |
+| System                     | Owns                                                          | Does NOT own                                                  |
+| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- |
+| Shopify                    | money, inventory, orders, tax, shipping, POS, payment methods | look and feel, content, wholesale pricing rules               |
+| Storefront (this repo)     | every retail pixel, SEO, performance, cart UX                 | payment, checkout, order data (reads only)                    |
+| Wholesale portal (Phase 2) | buyer approval, trade pricing, MOQ rules, invoices            | fulfilment, inventory (delegates to Shopify via draft orders) |
 
 ## Key constraints
 
@@ -68,8 +68,8 @@ handle missing combinations (query `availableForSale` and `quantityAvailable` pe
 
 ## Environments
 
-| Env | Storefront | Shopify |
-|---|---|---|
-| local | `localhost:3000` | live Shopify store, test-mode checkout (Bogus Gateway) |
-| preview | Vercel PR deploys | same |
-| production | `preciousjewels.co` | live checkout |
+| Env        | Storefront          | Shopify                                                |
+| ---------- | ------------------- | ------------------------------------------------------ |
+| local      | `localhost:3000`    | live Shopify store, test-mode checkout (Bogus Gateway) |
+| preview    | Vercel PR deploys   | same                                                   |
+| production | `preciousjewels.co` | live checkout                                          |

@@ -12,23 +12,25 @@ shipping, POS). This repo is the customer-facing website.
 
 ## Status
 
-🚧 Milestone 0 — not started. See the roadmap.
+🚧 Milestone 0 — in progress. App scaffolded, connected to the real Shopify store via
+`lib/shopify/`, homepage renders the live shop name locally. Still needed: a GitHub push, a Vercel
+deploy with env vars, and branch protection. See the roadmap.
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js (App Router, TypeScript) |
-| Styling | Tailwind CSS + shadcn/ui |
+| Layer        | Choice                           |
+| ------------ | -------------------------------- |
+| Framework    | Next.js (App Router, TypeScript) |
+| Styling      | Tailwind CSS + shadcn/ui         |
 | Commerce API | Shopify Storefront API (GraphQL) |
-| Hosting | Vercel |
-| Errors | Sentry |
+| Hosting      | Vercel                           |
+| Errors       | Sentry                           |
 
 Phase 2 adds a separate repo: a Django + DRF wholesale/B2B portal.
 
 ## Local development
 
-> Requires Node.js 20+. The app is scaffolded in Milestone 0 — these commands work once that's done.
+> Requires Node.js 20+.
 
 ```bash
 nvm install --lts          # if you don't have Node yet
@@ -39,17 +41,24 @@ npm run dev                 # http://localhost:3000
 
 Never commit `.env.local`. `.env.example` holds the variable names with blank values.
 
+**Getting the Shopify values:** install the **Headless** channel from the Shopify App Store, click
+**Create storefront**, and copy the public Storefront access token it generates (no OAuth/custom
+app needed — see [ROADMAP.md](ROADMAP.md) Milestone 0, step 3). `SHOPIFY_STORE_DOMAIN` is your
+`*.myshopify.com` domain — not `preciousjewels.co`.
+
 ## Getting this repo onto GitHub
 
 The repo is initialised locally with one commit on `main`. To publish it:
 
 **Option A — GitHub CLI:**
+
 ```bash
 gh repo create precious-jewels-storefront --private --source=. --remote=origin --push
 ```
 
 **Option B — manual:** create an empty repo named `precious-jewels-storefront` on github.com
 (no README/gitignore/license), then:
+
 ```bash
 git remote add origin git@github.com:<your-username>/precious-jewels-storefront.git
 git push -u origin main

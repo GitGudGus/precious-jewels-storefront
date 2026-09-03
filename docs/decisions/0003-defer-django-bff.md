@@ -10,7 +10,7 @@ and Shopify from the start, partly to keep Python in the architecture.
 
 ## Why a BFF is not needed for the Phase 1 storefront
 
-- **Secrets:** the Storefront API has a *public* access token designed to be exposed in the
+- **Secrets:** the Storefront API has a _public_ access token designed to be exposed in the
   browser. There is nothing to proxy or hide.
 - **SSR / SEO / caching:** Next.js does its own server-side rendering, incremental static
   regeneration, and data caching. That is the framework's core job.

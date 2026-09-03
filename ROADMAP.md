@@ -50,9 +50,9 @@ a wholesale portal Shopify can't give us without the $2,000/mo Plus plan.
 
 ### The two phases
 
-| Phase | What | Stack | Repo |
-|-------|------|-------|------|
-| **Phase 1** | DTC storefront | Next.js (App Router, TypeScript) → Shopify Storefront API | this repo |
+| Phase       | What                   | Stack                                                         | Repo                    |
+| ----------- | ---------------------- | ------------------------------------------------------------- | ----------------------- |
+| **Phase 1** | DTC storefront         | Next.js (App Router, TypeScript) → Shopify Storefront API     | this repo               |
 | **Phase 2** | Wholesale / B2B portal | Django + Django REST Framework + Postgres → Shopify Admin API | a new repo, added later |
 
 We are **not** building a Django backend-for-frontend in Phase 1. The storefront doesn't need one
@@ -74,7 +74,8 @@ Do these once before Milestone 0.
 ### Accounts (all have free tiers)
 
 - [ ] **GitHub** account + this repo pushed (see [README](README.md))
-- [ ] **Shopify admin access** — you have this. You'll create a *custom app* for API tokens in M0.
+- [ ] **Shopify admin access** — you have this. You'll install the **Headless** channel for a
+      Storefront API token in M0 (see M0 step 3 — this replaced the old "custom app" flow in 2026).
 - [ ] **Vercel** account (sign in with GitHub) — for hosting the storefront
 - [ ] **Sentry** account — error tracking (add in M5, but sign up now)
 - [ ] A password manager entry or `.env.local` file to keep API tokens — **never commit these**
@@ -82,7 +83,7 @@ Do these once before Milestone 0.
 ### Tools on your machine
 
 - [ ] **Node.js 20 LTS or newer** — `node --version`. Install via [nvm](https://github.com/nvm-sh/nvm)
-      (`nvm install --lts`) so you can switch versions later. *(Not currently installed — do this first.)*
+      (`nvm install --lts`) so you can switch versions later. _(Not currently installed — do this first.)_
 - [ ] **npm** (ships with Node) or **pnpm** (`npm i -g pnpm`) — this roadmap assumes npm
 - [ ] **Git** — already installed (2.55)
 - [ ] **VS Code** + extensions: ESLint, Prettier, Tailwind CSS IntelliSense, GraphQL
@@ -91,7 +92,7 @@ Do these once before Milestone 0.
 ### Knowledge to pick up as you go (don't front-load this)
 
 - Basic **React** (components, props, state, `useState`, `useEffect`)
-- Basic **TypeScript** (types on function arguments, interfaces) — learn it *while* building
+- Basic **TypeScript** (types on function arguments, interfaces) — learn it _while_ building
 - What **GraphQL** is (you send a query describing exactly the fields you want)
 - The **Next.js App Router** mental model: components render on the server by default
 
@@ -115,11 +116,16 @@ Every later milestone ships to the same pipeline. "Deploy last" is how projects 
    npx create-next-app@latest . --typescript --tailwind --app --eslint --src-dir --import-alias "@/*"
    ```
 2. Add Prettier + an ESLint config, a `.editorconfig`, and a `README` section on running locally.
-3. In **Shopify admin → Settings → Apps and sales channels → Develop apps**, create a custom app
-   named `Headless Storefront`. Grant **Storefront API** scopes: `unauthenticated_read_product_listings`,
-   `unauthenticated_read_product_inventory`, `unauthenticated_read_checkouts`,
-   `unauthenticated_write_checkouts`, `unauthenticated_read_content`. Install it. Copy the
-   **Storefront API access token** (the public one — it's safe in the browser).
+3. As of Jan 2026, Shopify moved app development to the **Dev Dashboard** and retired the old
+   admin "Develop apps" custom-app screen for new setups — but that Dev Dashboard flow is for
+   building full apps (Admin API, OAuth, CLI automation tokens) and is the wrong tool for a
+   Storefront-only token. Instead, install the **Headless** channel from the Shopify App Store,
+   then click **Create storefront**. This immediately generates a **public** and a **private**
+   Storefront access token — no OAuth, no client ID/secret. Use the public token (safe in the
+   browser); the private one is for server-side use only, not needed yet.
+   Store domain is your `*.myshopify.com` domain — **not** the custom/production domain
+   (`preciousjewels.co`), since that gets repointed to Vercel at the Milestone 5 cutover and
+   would break Storefront API calls if used here.
 4. Create `lib/shopify/client.ts` using `@shopify/storefront-api-client`. Read the token and store
    domain from environment variables (`.env.local`, and `.env.example` committed with blank values).
 5. Write one query: fetch the shop name. Render it on the homepage. This proves the connection.
@@ -129,9 +135,10 @@ Every later milestone ships to the same pipeline. "Deploy last" is how projects 
 8. Protect the `main` branch: require the CI check to pass before merge.
 
 **What you learn:** Next.js project layout, environment variables and secrets hygiene, the Shopify
-custom-app flow, GraphQL basics, connecting a repo to a host, what CI is for.
+Headless-channel token flow, GraphQL basics, connecting a repo to a host, what CI is for.
 
 **Definition of done**
+
 - [ ] `npm run dev` shows the live Shopify shop name pulled from the API
 - [ ] The same page is live on a `*.vercel.app` URL
 - [ ] Opening a PR runs lint + typecheck + build automatically
@@ -176,6 +183,7 @@ default themes do least distinctively.
 optimization, modelling real product data, GraphQL pagination with cursors.
 
 **Definition of done**
+
 - [ ] Every collection and product from Shopify renders with correct prices and images
 - [ ] Picking a variant updates price, image, and the add-to-cart button's enabled state
 - [ ] Lighthouse mobile performance score ≥ 90 on a product page
@@ -190,7 +198,7 @@ optimization, modelling real product data, GraphQL pagination with cursors.
 (where Klarna/Afterpay and all payment methods already work).
 
 **Why it matters:** this is the conversion moment. The cart must feel instant and never lose items.
-Checkout itself stays on Shopify — you are *not* rebuilding payment forms.
+Checkout itself stays on Shopify — you are _not_ rebuilding payment forms.
 
 **What you build**
 
@@ -213,6 +221,7 @@ Checkout itself stays on Shopify — you are *not* rebuilding payment forms.
 cookies and state that survives reloads, why you don't rebuild checkout.
 
 **Definition of done**
+
 - [ ] Add, update quantity, and remove all work and update the subtotal
 - [ ] Cart survives a hard refresh and is shared across tabs
 - [ ] "Checkout" lands on Shopify's checkout with the right items and quantities
@@ -249,6 +258,7 @@ guest checkout must still work — never force an account.
 the build-vs-buy tradeoff for a CMS.
 
 **Definition of done**
+
 - [ ] A customer can sign in and see a real past order with line items and status
 - [ ] Signing out clears the session; `/account` redirects to login when logged out
 - [ ] Guest checkout is unaffected
@@ -285,6 +295,7 @@ project" and "a store".
 third-party APIs, the long tail of "done".
 
 **Definition of done**
+
 - [ ] Searching "gold hoops" returns relevant results with working filters
 - [ ] Filters and sort are shareable via URL and survive refresh
 - [ ] Wishlist works for both guests and logged-in customers
@@ -332,6 +343,7 @@ know if something breaks.
    - [ ] Owner can still use Shopify POS at pop-ups (unaffected, but confirm)
 
 **Definition of done**
+
 - [ ] `preciousjewels.co` serves the new storefront
 - [ ] A real customer order completes and appears in Shopify with correct tax + shipping
 - [ ] Sentry is receiving events; you get an alert on a test error
@@ -386,6 +398,7 @@ strong fit and gives you a backend portfolio piece with genuine domain logic.
    (Celery or Django-Q2), Sentry, backups, a staging environment
 
 **Definition of done**
+
 - [ ] A buyer can apply, be approved, log in, and see their trade prices (not retail)
 - [ ] Submitting an order creates a matching draft order in Shopify admin
 - [ ] MOQs and case-pack rules are enforced with clear errors
@@ -396,7 +409,7 @@ strong fit and gives you a backend portfolio piece with genuine domain logic.
 
 ## Ongoing — Portfolio packaging
 
-Do this *as you go*, not at the end. It's what turns "I made a website" into evidence of skill.
+Do this _as you go_, not at the end. It's what turns "I made a website" into evidence of skill.
 
 - **README** with an architecture diagram, the stack and why, a live link, and screenshots
 - **`docs/decisions/`** — short Architecture Decision Records for every real fork (why headless,
@@ -416,20 +429,20 @@ Do this *as you go*, not at the end. It's what turns "I made a website" into evi
 
 ## Appendix A — Stack reference
 
-| Concern | Choice | Notes |
-|---|---|---|
-| Storefront framework | Next.js 15+, App Router, TypeScript | Biggest community; most transferable |
-| Styling | Tailwind CSS + shadcn/ui | Current default combo |
-| Shopify client | `@shopify/storefront-api-client` | Official, typed |
-| Hosting | Vercel (or Shopify Oxygen) | Both have free tiers; Oxygen is Shopify-native |
-| Commerce backend | Shopify Storefront API (GraphQL) | The anchor decision |
-| Customer auth | Shopify Customer Account API | Their newer OAuth system |
-| Search | Shopify Search & Discovery app | Upgrade to Meilisearch/Algolia only if needed |
-| Reviews | Judge.me or Okendo | Via their API |
-| Error tracking | Sentry | Frontend + server |
-| Analytics | Plausible or GA4 | Plus Shopify's built-in order analytics |
-| Wholesale backend (Phase 2) | Django + DRF + Postgres | Own repo, own deploy |
-| Wholesale hosting | Render or Fly.io | Managed Postgres, background workers |
+| Concern                     | Choice                              | Notes                                          |
+| --------------------------- | ----------------------------------- | ---------------------------------------------- |
+| Storefront framework        | Next.js 15+, App Router, TypeScript | Biggest community; most transferable           |
+| Styling                     | Tailwind CSS + shadcn/ui            | Current default combo                          |
+| Shopify client              | `@shopify/storefront-api-client`    | Official, typed                                |
+| Hosting                     | Vercel (or Shopify Oxygen)          | Both have free tiers; Oxygen is Shopify-native |
+| Commerce backend            | Shopify Storefront API (GraphQL)    | The anchor decision                            |
+| Customer auth               | Shopify Customer Account API        | Their newer OAuth system                       |
+| Search                      | Shopify Search & Discovery app      | Upgrade to Meilisearch/Algolia only if needed  |
+| Reviews                     | Judge.me or Okendo                  | Via their API                                  |
+| Error tracking              | Sentry                              | Frontend + server                              |
+| Analytics                   | Plausible or GA4                    | Plus Shopify's built-in order analytics        |
+| Wholesale backend (Phase 2) | Django + DRF + Postgres             | Own repo, own deploy                           |
+| Wholesale hosting           | Render or Fly.io                    | Managed Postgres, background workers           |
 
 ## Appendix B — Known gotchas
 
@@ -441,21 +454,32 @@ Do this *as you go*, not at the end. It's what turns "I made a website" into evi
   and `availableForSale` per variant and reflect it in the UI.
 - **Don't rebuild checkout.** Every hour spent there is an hour Shopify already spent, better.
 - **Test mode**: enable Shopify's Bogus Gateway for test orders; disable before launch.
-- **Redirects**: crawl the current Shopify site *before* cutover to capture every URL to redirect.
+- **Redirects**: crawl the current Shopify site _before_ cutover to capture every URL to redirect.
+- **`SHOPIFY_STORE_DOMAIN` must be the `*.myshopify.com` domain, never the production/custom
+  domain.** `preciousjewels.co` gets repointed to Vercel at the M5 cutover — using it here would
+  make the storefront fetch product data from itself instead of Shopify.
+- **`npx tsc --noEmit` fails on a fresh checkout** with `Cannot find name 'LayoutProps'` until
+  `.next/types` exists. Run `npx next typegen` (or `next build`/`next dev`) first — CI does this
+  before typechecking; do the same locally after a clean clone or `.next` deletion.
+- **Getting a Storefront API token no longer means creating a custom app.** As of Jan 2026,
+  Shopify moved app dev to the Dev Dashboard; for Storefront-only access, install the **Headless**
+  channel from the Shopify App Store and click **Create storefront** instead (see M0 step 3). The
+  Dev Dashboard's `client_credentials` grant (`/admin/oauth/access_token`) issues an **Admin API**
+  token, not a Storefront one — don't use it for this.
 
 ## Appendix C — Rough sequencing
 
 This is not a deadline, just an order and relative size. Adjust to your pace.
 
-| Milestone | Relative effort | Depends on |
-|---|---|---|
-| M0 Foundations | S | — |
-| M1 Catalog | L | M0 |
-| M2 Cart & checkout | M | M1 |
-| M3 Accounts & content | M | M2 |
-| M4 Search & polish | M | M1 |
-| M5 Launch | M | M2, M3, M4 |
-| M6 Wholesale portal | L | M5 (or start earlier as a parallel track) |
+| Milestone             | Relative effort | Depends on                                |
+| --------------------- | --------------- | ----------------------------------------- |
+| M0 Foundations        | S               | —                                         |
+| M1 Catalog            | L               | M0                                        |
+| M2 Cart & checkout    | M               | M1                                        |
+| M3 Accounts & content | M               | M2                                        |
+| M4 Search & polish    | M               | M1                                        |
+| M5 Launch             | M               | M2, M3, M4                                |
+| M6 Wholesale portal   | L               | M5 (or start earlier as a parallel track) |
 
 Ship M0–M2 to a real URL before worrying about M4 polish. A working "browse and buy" beats a
 beautiful catalog with no cart.
