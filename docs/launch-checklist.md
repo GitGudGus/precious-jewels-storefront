@@ -1,43 +1,45 @@
 # Launch checklist — Milestone 5
 
-The **code** for launch prep is in the repo (SEO, redirects, analytics, error monitoring, the
-checkout-domain override). This document is the **operator runbook** — the parts that happen in
-Shopify admin, at the DNS registrar, and with a real card. Tick items live.
+The **code** for launch prep is in the repo (SEO, redirects, analytics, error monitoring). This
+document is the **operator runbook** — Shopify admin, the DNS registrar, a real card. Tick items
+live.
 
 ---
 
 ## 0. The checkout domain — read this first
 
-A headless storefront and Shopify checkout **cannot** run on the exact same domain. The standard
-pattern: the storefront takes `preciousjewels.co` + `www`, and checkout runs on a **`checkout.`
-subdomain** that stays pointed at Shopify.
+Shopify serves checkout from its **primary domain**, and `cart.checkoutUrl` is issued on that
+host. Today the primary is `preciousjewels.co`, so checkout URLs are
+`preciousjewels.co/cart/c/…`. The instant `preciousjewels.co` DNS points at Vercel (this app),
+those URLs 404.
 
-Today `cart.checkoutUrl` comes back as `preciousjewels.co/cart/c/…` (Shopify's primary domain). The
-moment `preciousjewels.co` DNS points at Vercel, that URL would 404. The fix has two halves:
+**The fix: at the cutover, change Shopify's primary domain to `shop-precious-jewels.myshopify.com`.**
+Then `cart.checkoutUrl` comes back as `shop-precious-jewels.myshopify.com/cart/c/…`, which Shopify
+redirects to its own hosted checkout on `shop.app` — a Shopify-controlled domain, unaffected by
+the DNS change. **No code change, no `SHOPIFY_CHECKOUT_DOMAIN` needed** (leave it blank; the
+`normalizeCheckoutUrl` override in `src/lib/shopify/reshape.ts` is a fallback only).
 
-**In Shopify admin** (Settings → Domains):
-1. Connect a new domain: `checkout.preciousjewels.co`. Shopify will give you a CNAME target
-   (usually `shops.myshopify.com`).
-2. Set `checkout.preciousjewels.co` as the **primary domain**.
-3. **Do not remove** `shop-precious-jewels.myshopify.com` — it backs `SHOPIFY_STORE_DOMAIN` (the
-   Storefront API) and the checkout fallback.
+> More branded alternative: use `preciousjewelsmia.com` as the primary instead (already connected
+> in Shopify). Checkout then runs on `preciousjewelsmia.com/…`. Keep that domain's DNS pointed at
+> Shopify. Everything below is written for the `.myshopify.com` option.
 
-**In this repo / Vercel:**
-4. Set env var `SHOPIFY_CHECKOUT_DOMAIN=checkout.preciousjewels.co` in the Vercel project
-   (Production + Preview). `normalizeCheckoutUrl` in `src/lib/shopify/reshape.ts` rewrites every
-   `checkoutUrl` host to this value. Leave it **unset until the subdomain above exists.**
+**⚠️ Timing matters — do this IN the cutover window, not before.** Changing the primary domain
+makes Shopify 301-redirect _every_ connected domain (`preciousjewels.co`, `www`,
+`preciousjewelsmia.com`) to the new primary. If you do it while `preciousjewels.co` still serves
+the current store, customers get bounced to the raw `.myshopify.com` URL and Google starts
+re-canonicalising. So: change the primary and switch the DNS back-to-back (steps in §2).
 
-**Verify** (after 1–4, before the apex DNS switch): add an item to the cart on the Vercel preview,
-click Checkout → must land on `https://checkout.preciousjewels.co/…` and load Shopify's checkout,
-not redirect or 404.
+**Never remove `shop-precious-jewels.myshopify.com`** from Shopify's domains — it backs
+`SHOPIFY_STORE_DOMAIN` (the Storefront API this whole app runs on).
 
 ---
 
 ## 1. Pre-cutover (do these days before, in any order)
 
 ### Shopify admin
+
 - [ ] Bogus Gateway disabled / real payment provider live; Klarna & Afterpay enabled and
-      **visible at checkout** (test on the preview via the `checkout.` domain).
+      **visible at checkout** (verify by checking out on the Vercel preview).
 - [ ] All **test orders deleted**; inventory counts correct; nothing accidentally set to "continue
       selling when out of stock" that shouldn't be.
 - [ ] Terms of Service and Shipping Policy have real text (Settings → Policies) — the
@@ -46,18 +48,22 @@ not redirect or 404.
       from-address, links point at `preciousjewels.co`.
 - [ ] Tax: Settings → Taxes — Florida nexus set; spot-check tax on a FL address vs an out-of-state
       address at checkout.
-- [ ] `checkout.preciousjewels.co` connected + set primary (see §0); `SHOPIFY_CHECKOUT_DOMAIN`
-      set in Vercel.
+- [ ] Store password removed (Online Store → Preferences) — do this at cutover, not before.
+- [ ] Decide the checkout primary domain (§0): `shop-precious-jewels.myshopify.com` (simple) or
+      `preciousjewelsmia.com` (branded). **Don't change it yet** — that's a §2 step.
 - [ ] Confirm the owner can still take payments in **Shopify POS** at pop-ups (unaffected by
       headless, but confirm before launch day).
 
 ### Vercel
+
 - [ ] Production env vars present: `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`,
-      `SHOPIFY_CHECKOUT_DOMAIN`, and (optional) `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`.
+      and (optional) `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`. `SHOPIFY_CHECKOUT_DOMAIN` stays
+      **blank** for the `.myshopify.com` option.
 - [ ] Latest `main` deployed green to Production.
 - [ ] Vercel Analytics + Speed Insights showing data on the current preview URL.
 
 ### SEO / content
+
 - [ ] Crawl the **live** `preciousjewels.co` (Screaming Frog free tier, 500 URLs) → export all
       indexed URLs. For anything not covered by `next.config.ts` redirects, add a redirect.
       Known-covered: products, collections, pages, policies; `/blogs/news*` → `/journal*`;
@@ -71,6 +77,7 @@ not redirect or 404.
 - [ ] `axe` DevTools clean on the same three pages; one pass with VoiceOver.
 
 ### Monitoring
+
 - [ ] Sentry project created; `NEXT_PUBLIC_SENTRY_DSN` (+ `SENTRY_AUTH_TOKEN` for readable stack
       traces) in Vercel; trigger a test error and confirm it lands in Sentry with an alert.
 - [ ] UptimeRobot (free) monitors on `https://preciousjewels.co/` and one PDP — 5-min interval,
@@ -82,16 +89,19 @@ not redirect or 404.
 
 - [ ] **1 day before:** lower the TTL on `preciousjewels.co` + `www` DNS records to 300s.
 - [ ] In Vercel → project → Domains: add `preciousjewels.co` and `www.preciousjewels.co`. Vercel
-      shows the exact records needed.
-- [ ] At the registrar: point apex + `www` at Vercel (A/ALIAS/ANAME per Vercel's instructions);
-      leave the `checkout` CNAME → Shopify untouched.
+      shows the exact records needed. (Don't switch DNS yet — just have the records ready.)
+- [ ] Remove the store password (Online Store → Preferences).
+- [ ] **Shopify → Settings → Domains: set `shop-precious-jewels.myshopify.com` as the primary
+      domain.** This immediately 301s `preciousjewels.co` → `.myshopify.com`, so move fast to the
+      next step.
+- [ ] At the registrar: point apex + `www` at Vercel (A/ALIAS/ANAME per Vercel's instructions).
 - [ ] Wait for propagation (minutes at 300s TTL). Vercel domain status → "Valid Configuration".
 
 ## 3. Verify live (immediately after)
 
 - [ ] `https://preciousjewels.co/` loads the new storefront (hard refresh / incognito).
-- [ ] A PDP loads; add to cart; drawer opens; **Checkout → `checkout.preciousjewels.co`**, Shopify
-      checkout loads.
+- [ ] A PDP loads; add to cart; drawer opens; **Checkout → `shop-precious-jewels.myshopify.com`
+      → `shop.app`**, Shopify checkout loads (no 404, no bounce to `preciousjewels.co`).
 - [ ] **Place one real order with a real card**, complete it, confirm it appears in Shopify admin
       with correct **tax + shipping**, then **refund it**.
 - [ ] Confirmation email received and looks right.
@@ -103,9 +113,10 @@ not redirect or 404.
 
 ## 4. Rollback (if checkout or the site is broken and not fixable in ~15 min)
 
+- [ ] Shopify → Domains: set `preciousjewels.co` back as the primary domain.
 - [ ] At the registrar: revert apex + `www` to the **old Shopify DNS records** (write them down
-      here *before* cutover: `__________`).
-- [ ] In Shopify admin: set `preciousjewels.co` back to primary if it was changed.
+      here _before_ cutover: `__________`).
+- [ ] Re-enable the store password if you want to keep working privately.
 - [ ] TTL of 300s means recovery in minutes. Debug on the preview, retry later.
 
 ## 5. Post-launch (first week)
