@@ -64,8 +64,27 @@ Deferred (user tasks): M1 Lighthouse ≥ 90 on a PDP; M1 `custom.*` metafields; 
 test order. Redesign follow-ups if wanted: real hero photography, a proper mobile nav drawer,
 sticky add-to-cart on mobile PDP, newsletter wiring.
 
-Next feature work: **Milestone 3** — customer accounts (Customer Account API) + content/legal pages
-(About, FAQ, Privacy, Returns, Terms), which drop into the new design system.
+**Milestone 3a (Content & legal pages) — PR `m3a-content` open.** The owner already authored this
+content in Shopify admin; we just render it — **no CMS**.
+
+- `src/lib/shopify/content.ts` + `queries/content.ts` — `getPage` / `getPageHandles` / `getPolicy`
+  / `getArticles` / `getArticleHandles` / `getArticle`. `Page` / `Policy` / `Article` types +
+  reshapers. `constants.ts` gained `CONTACT_EMAIL` (**TODO: user to confirm** — the store uses
+  dept-specific addresses like `returns@` / `wholesale@`, no known generic one), `CONTACT_PAGE_HANDLE`,
+  `SITE_URL` (`https://preciousjewels.co` — the M5 domain; used for `metadataBase` + `sitemap`).
+- Routes (all SSG, ISR 900s): `/pages/[handle]` (about-us, faqs, sizing-chart, contact-us-1,
+  wholesale — contact gets a `mailto:` CTA), `/policies/[handle]` (privacy-policy, refund-policy,
+  terms-of-service, shipping-policy — empty policy → contact-line fallback), `/journal` (empty
+  state) + `/journal/[handle]` (`dynamicParams=false`, 0 articles today).
+- `Footer` rebuilt (Shop / Company / Help columns + Privacy/Terms bottom bar); header nav gained
+  Journal + About. `src/app/sitemap.ts` enumerates everything.
+
+**Milestone 3b (Customer accounts) — deferred, post-launch.** Customer Account API OAuth,
+`/account` with order history + addresses. Needs Shopify admin config (new customer accounts,
+client ID, callback URLs). Shopify's hosted account pages work meanwhile; not a launch blocker.
+
+Next: M4 (search/filtering, merchandising, reviews) or M5 (launch prep — domain cutover, Sentry,
+analytics). M3b whenever the owner wants headless accounts.
 
 Done:
 

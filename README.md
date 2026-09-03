@@ -25,7 +25,11 @@ free-shipping progress bar, "Checkout" hands off to Shopify's hosted checkout.
 palette, full-bleed section bands. Tokens in `src/app/globals.css`, primitives in
 `src/components/ui/`.
 
-🚧 Milestone 3 (accounts + content) — next.
+✅ Milestone 3a (content + legal) — done. About, FAQ, Sizing, Contact, Wholesale, and the four
+policy pages render from Shopify admin; `/journal` blog shell; `sitemap.xml`. Customer accounts
+(M3b) deferred post-launch.
+
+🚧 Next: Milestone 4 (search, merchandising) or Milestone 5 (launch prep).
 
 ## Stack
 
