@@ -1,4 +1,5 @@
-import { formatPrice, formatPriceRange, type Money } from '@/lib/shopify';
+import { formatPrice, formatPriceRange } from '@/lib/shopify/format';
+import type { Money } from '@/lib/shopify/types';
 
 type PriceProps = {
   min: Money;

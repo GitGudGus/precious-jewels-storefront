@@ -9,7 +9,7 @@ import {
   type CollectionSortSlug,
   type PageInfo,
   type ProductListItem,
-} from '@/lib/shopify';
+} from '@/lib/shopify/types';
 
 import { fetchCollectionProducts } from './actions';
 
