@@ -5,6 +5,8 @@
  */
 
 import type {
+  Cart,
+  CartLine,
   Collection,
   Money,
   Product,
@@ -189,5 +191,64 @@ export function reshapeCollection(collection: RawCollection): Collection {
     title: collection.title,
     descriptionHtml: collection.descriptionHtml,
     image: reshapeImage(collection.image),
+  };
+}
+
+// --- Cart -----------------------------------------------------------------
+
+type RawCartMerchandise = {
+  id: string;
+  title: string;
+  availableForSale: boolean;
+  price: RawMoney;
+  image: RawImage;
+  selectedOptions: { name: string; value: string }[];
+  product: { handle: string; title: string };
+};
+
+type RawCartLine = {
+  id: string;
+  quantity: number;
+  cost: { totalAmount: RawMoney };
+  merchandise: RawCartMerchandise;
+};
+
+export type RawCart = {
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
+  cost: { subtotalAmount: RawMoney; totalAmount: RawMoney };
+  lines: RawConnection<RawCartLine>;
+};
+
+function reshapeCartLine(line: RawCartLine): CartLine {
+  const { merchandise } = line;
+  return {
+    id: line.id,
+    quantity: line.quantity,
+    cost: { totalAmount: reshapeMoney(line.cost.totalAmount) },
+    merchandise: {
+      variantId: merchandise.id,
+      variantTitle: merchandise.title,
+      productHandle: merchandise.product.handle,
+      productTitle: merchandise.product.title,
+      selectedOptions: merchandise.selectedOptions,
+      image: reshapeImage(merchandise.image),
+      price: reshapeMoney(merchandise.price),
+      availableForSale: merchandise.availableForSale,
+    },
+  };
+}
+
+export function reshapeCart(cart: RawCart): Cart {
+  return {
+    id: cart.id,
+    checkoutUrl: cart.checkoutUrl,
+    totalQuantity: cart.totalQuantity,
+    cost: {
+      subtotalAmount: reshapeMoney(cart.cost.subtotalAmount),
+      totalAmount: reshapeMoney(cart.cost.totalAmount),
+    },
+    lines: flattenConnection(cart.lines).map(reshapeCartLine),
   };
 }

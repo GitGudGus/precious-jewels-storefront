@@ -86,6 +86,53 @@ export type Paginated<T> = {
   pageInfo: PageInfo;
 };
 
+// --- Cart -------------------------------------------------------------------
+
+/** The variant a cart line points at, flattened out of `merchandise`. */
+export type CartLineMerchandise = {
+  variantId: string;
+  productHandle: string;
+  productTitle: string;
+  variantTitle: string;
+  selectedOptions: SelectedOption[];
+  image: ShopImage | null;
+  price: Money;
+  availableForSale: boolean;
+};
+
+export type CartLine = {
+  id: string;
+  quantity: number;
+  cost: { totalAmount: Money };
+  merchandise: CartLineMerchandise;
+};
+
+export type Cart = {
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
+  cost: {
+    subtotalAmount: Money;
+    totalAmount: Money;
+  };
+  lines: CartLine[];
+};
+
+/**
+ * Informational notice from a cart mutation (e.g. a line clamped to available
+ * stock). Distinct from `userErrors` — the mutation still succeeded.
+ */
+export type CartWarning = {
+  code: string;
+  message: string;
+  target: string;
+};
+
+export type CartMutationResult = {
+  cart: Cart | null;
+  warnings: CartWarning[];
+};
+
 // --- Sorting -----------------------------------------------------------------
 
 export type ProductSortKey =
