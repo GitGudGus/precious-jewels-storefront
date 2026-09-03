@@ -276,10 +276,15 @@ the build-vs-buy tradeoff for a CMS.
 
 **Definition of done**
 
-- [ ] A customer can sign in and see a real past order with line items and status
-- [ ] Signing out clears the session; `/account` redirects to login when logged out
-- [ ] Guest checkout is unaffected
-- [ ] About, journal, and all policy pages are live and linked in the footer
+**Split:** M3a (content + legal) done; M3b (customer accounts) deferred post-launch — accounts
+aren't a launch blocker (Shopify's hosted account pages still work), and the Customer Account API
+needs Shopify admin OAuth config.
+
+- [~] A customer can sign in and see a real past order — **M3b, deferred**
+- [~] Signing out clears the session; `/account` redirects to login — **M3b, deferred**
+- [x] Guest checkout is unaffected (no account gate exists)
+- [x] About, journal, and all policy pages are live and linked in the footer
+      (`/pages/[handle]`, `/policies/[handle]`, `/journal`; content pulled from Shopify admin)
 
 ---
 
