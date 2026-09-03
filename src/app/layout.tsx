@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Jost, Ovo } from 'next/font/google';
 import './globals.css';
 
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { CartProvider } from '@/components/cart/CartProvider';
 import { Footer } from '@/components/layout/Footer';
@@ -55,6 +58,8 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           <Footer />
           <CartDrawer />
         </CartProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

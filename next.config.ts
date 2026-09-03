@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs/config';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -36,4 +37,17 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * Wrap with Sentry's build plugin only when a `SENTRY_AUTH_TOKEN` is present
+ * (source-map upload for readable stack traces). The runtime SDK
+ * (`src/instrumentation*.ts`) captures errors without this — so CI and local
+ * builds, which have no token, use the plain config and stay Turbopack-clean.
+ */
+export default process.env.SENTRY_AUTH_TOKEN
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      silent: true,
+      widenClientFileUpload: true,
+    })
+  : nextConfig;
