@@ -73,9 +73,9 @@ Do these once before Milestone 0.
 
 ### Accounts (all have free tiers)
 
-- [ ] **GitHub** account + this repo pushed (see [README](README.md))
-- [ ] **Shopify admin access** — you have this. You'll install the **Headless** channel for a
-      Storefront API token in M0 (see M0 step 3 — this replaced the old "custom app" flow in 2026).
+- [x] **GitHub** account + this repo pushed (see [README](README.md))
+- [x] **Shopify admin access** — Storefront API token generated via the **Headless** channel (see
+      M0 step 3 — this replaced the old "custom app" flow in 2026).
 - [ ] **Vercel** account (sign in with GitHub) — for hosting the storefront
 - [ ] **Sentry** account — error tracking (add in M5, but sign up now)
 - [ ] A password manager entry or `.env.local` file to keep API tokens — **never commit these**
@@ -132,17 +132,21 @@ Every later milestone ships to the same pipeline. "Deploy last" is how projects 
 6. Push to GitHub. Import the repo in **Vercel**. Add the env vars in Vercel's dashboard. Deploy.
 7. Add a **GitHub Actions** workflow (`.github/workflows/ci.yml`) that runs `npm run lint`,
    `npm run build`, and `npx tsc --noEmit` on every pull request.
-8. Protect the `main` branch: require the CI check to pass before merge.
+8. Protect the `main` branch: require the CI check to pass before merge. (Note: GitHub branch
+   protection and rulesets require GitHub Pro on a **private** repo. This repo was made **public**
+   at the end of M0 to unlock rulesets on the free plan.)
 
 **What you learn:** Next.js project layout, environment variables and secrets hygiene, the Shopify
 Headless-channel token flow, GraphQL basics, connecting a repo to a host, what CI is for.
 
 **Definition of done**
 
-- [ ] `npm run dev` shows the live Shopify shop name pulled from the API
-- [ ] The same page is live on a `*.vercel.app` URL
-- [ ] Opening a PR runs lint + typecheck + build automatically
-- [ ] `main` can't be pushed to directly; no secrets are in git history
+- [x] `npm run dev` shows the live Shopify shop name pulled from the API
+- [x] The same page is live on a `*.vercel.app` URL (`precious-jewels.vercel.app`)
+- [x] Opening a PR runs lint + typecheck + build automatically
+- [x] `main` can't be pushed to directly (GitHub ruleset "main protection", active; repo made
+  public to unlock rulesets on the free plan); no secrets are in git history (verified — `.env.local`
+  never tracked, token absent from all history)
 
 ---
 

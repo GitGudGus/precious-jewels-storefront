@@ -19,7 +19,8 @@ cheap later.
 
 ## Current status (as of 2026-09-03)
 
-**Milestone 0 (Foundations) — in progress.**
+**Milestone 0 (Foundations) — complete.** Storefront is scaffolded, connected to Shopify, live on
+Vercel, CI is green, and `main` is protected. Next: Milestone 1 (catalog/browsing).
 
 Done:
 
@@ -42,14 +43,32 @@ Done:
 - CI workflow (`.github/workflows/ci.yml`) rewritten — it used to be a placeholder that skipped all
   steps if `package.json` was absent; now it actually runs `npm ci` → lint → `next typegen` →
   `tsc --noEmit` → `build`
+- Repo pushed to GitHub: [github.com/GitGudGus/precious-jewels-storefront](https://github.com/GitGudGus/precious-jewels-storefront)
+  (private). GitHub account is `GitGudGus`, `gh` CLI already authenticated locally with `repo` +
+  `workflow` scopes.
+- `SHOPIFY_STORE_DOMAIN` and `SHOPIFY_STOREFRONT_ACCESS_TOKEN` added as GitHub Actions repo secrets
+  (set via `gh secret set --env-file .env.local`, with the user's explicit go-ahead — this is a
+  sensitive action the permission system blocks by default, expect to ask again for anything
+  similar, e.g. Vercel env vars if done via API/CLI rather than their dashboard)
+- CI confirmed green on `main` end to end (lint, typegen, typecheck, build all pass against the
+  real Shopify secrets)
+- **Vercel project `precious-jewels` created** (imported from GitHub), both env vars
+  (`SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`) set for Production + Preview via the
+  dashboard, deployed green — homepage live at `precious-jewels.vercel.app` rendering the shop
+  name. First deploy failed with `Shopify Storefront API error: GraphQL Client: fetch failed`
+  during static prerender of `/`; root cause was the Vercel env var value, fixed by re-entering it
+  cleanly (see gotcha below).
 
-Not done yet:
-
-- Repo has never been pushed to GitHub (still local-only, one initial commit on `main`)
-- No Vercel project exists; no env vars set there
-- GitHub repo secrets (`SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`) not yet added —
-  needed for CI's build step to succeed on a push/PR
-- Branch protection on `main` not yet configured
+- **Repo made public** (`gh repo edit --visibility public`) — GitHub branch protection *and*
+  rulesets both require GitHub Pro on a *private* repo (confirmed via API, HTTP 403). Going public
+  unlocks rulesets on the free plan and gives unlimited Actions minutes. Verified clean before
+  flipping: `.env.local` never tracked, the Storefront token appears nowhere in git history, only
+  `.env.example` (blank values) is committed. (The public Storefront token is designed for
+  client-side exposure anyway, so this is low-stakes even setting aside the history being clean.)
+- **Branch protection on `main`** — GitHub ruleset "main protection" (id 22203545, enforcement
+  `active`): blocks direct push (PR required, 0 approvals), blocks force-push and deletion, requires
+  the CI `verify` status check to pass with branches up to date. Applies to admins too (no bypass
+  actors set) — add a bypass actor in repo Settings → Rules if self-PRs get tedious.
 
 ## Shopify setup — what actually worked (important, non-obvious)
 
@@ -92,6 +111,16 @@ changes this flow again, update both places, not just one.
 - The Shopify Storefront API client throws at build/render time if credentials are wrong — this is
   expected and desirable (surfaced cleanly as `GraphQL Client: Unauthorized` during local testing
   with placeholder values, rather than failing silently).
+- **`fetch failed` vs `Unauthorized` when diagnosing a bad Shopify config:** `GraphQL Client:
+  Unauthorized` means the request reached Shopify and the *token* was rejected. `GraphQL Client:
+  fetch failed` means the request never got there — almost always a malformed `SHOPIFY_STORE_DOMAIN`
+  (protocol prefix, trailing slash, or a stray space/newline from pasting into a dashboard field).
+  Hit this on the first Vercel deploy; the value needed to be exactly `shop-precious-jewels.myshopify.com`.
+- The homepage (`/`) is a plain server component with no dynamic APIs, so `next build` **statically
+  prerenders it at build time** — the Shopify `getShopName()` call runs on the build machine (CI and
+  Vercel), not per-request. That's why a bad env var fails the *build* rather than just a request.
+  Fine for now (shop name never changes); revisit with `revalidate`/dynamic rendering when the
+  homepage shows real catalog data in M1.
 
 ## Conventions to keep following
 
@@ -113,10 +142,13 @@ changes this flow again, update both places, not just one.
 
 ## Next steps (pick up here)
 
-1. Push repo to GitHub (`gh repo create precious-jewels-storefront --private --source=. --remote=origin --push`
-   or manual remote add — see README)
-2. Add `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_STOREFRONT_ACCESS_TOKEN` as GitHub Actions repo secrets
-3. Import repo into Vercel, add the same two env vars, deploy — recommended Vercel project name is
-   `precious-jewels` (→ `precious-jewels.vercel.app`), decided during this project's setup
-4. Enable branch protection on `main` requiring the CI check before merge
-5. Once M0's definition of done is fully checked off, move to Milestone 1 (catalog/browsing)
+M0 is done. Start **Milestone 1 (catalog/browsing)** — see ROADMAP.md M1:
+
+1. Data layer in `src/lib/shopify/` — queries + thin functions for collections and for a single
+   product with all variants/images (follow the existing `queries/shop.ts` + `shop.ts` pattern:
+   one query file per concern, a function that throws on `errors`/missing `data`).
+2. Browse UI (collection listing, product grid) and the product detail page, responsive.
+
+Uncommitted as of end of this session: doc updates to CLAUDE.md, ROADMAP.md, README.md, plus the
+pre-existing `.gitignore` / `.vscode/extensions.json` changes. Nothing committed (per project
+convention — user commits).

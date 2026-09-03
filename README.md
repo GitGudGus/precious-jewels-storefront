@@ -12,9 +12,9 @@ shipping, POS). This repo is the customer-facing website.
 
 ## Status
 
-🚧 Milestone 0 — in progress. App scaffolded, connected to the real Shopify store via
-`lib/shopify/`, homepage renders the live shop name locally. Still needed: a GitHub push, a Vercel
-deploy with env vars, and branch protection. See the roadmap.
+✅ Milestone 0 — done. App scaffolded, connected to the real Shopify store via `lib/shopify/`,
+live on Vercel (`precious-jewels.vercel.app`), CI green, `main` protected. Now on Milestone 1
+(catalog/browsing). See the roadmap.
 
 ## Stack
 
@@ -46,25 +46,13 @@ Never commit `.env.local`. `.env.example` holds the variable names with blank va
 app needed — see [ROADMAP.md](ROADMAP.md) Milestone 0, step 3). `SHOPIFY_STORE_DOMAIN` is your
 `*.myshopify.com` domain — not `preciousjewels.co`.
 
-## Getting this repo onto GitHub
+## Repo
 
-The repo is initialised locally with one commit on `main`. To publish it:
-
-**Option A — GitHub CLI:**
-
-```bash
-gh repo create precious-jewels-storefront --private --source=. --remote=origin --push
-```
-
-**Option B — manual:** create an empty repo named `precious-jewels-storefront` on github.com
-(no README/gitignore/license), then:
-
-```bash
-git remote add origin git@github.com:<your-username>/precious-jewels-storefront.git
-git push -u origin main
-```
-
-Start it **private**. Flip to public for the portfolio once there's something to show.
+Live at [github.com/GitGudGus/precious-jewels-storefront](https://github.com/GitGudGus/precious-jewels-storefront)
+(public — made public so branch rulesets work on the free plan; no secrets are in the repo or its
+history). CI runs on every push and PR to `main`; repo secrets (`SHOPIFY_STORE_DOMAIN`,
+`SHOPIFY_STOREFRONT_ACCESS_TOKEN`) are set so the build step can fetch from Shopify. `main` is
+protected by a ruleset — PRs only, CI must pass.
 
 ## Contributing (to future-you)
 
