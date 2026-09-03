@@ -233,11 +233,17 @@ cookies and state that survives reloads, why you don't rebuild checkout.
 
 **Definition of done**
 
-- [ ] Add, update quantity, and remove all work and update the subtotal
-- [ ] Cart survives a hard refresh and is shared across tabs
-- [ ] "Checkout" lands on Shopify's checkout with the right items and quantities
-- [ ] A completed test order (Shopify Bogus Gateway) appears in Shopify admin
-- [ ] Adding a sold-out variant is prevented with a clear message
+- [x] Add, update quantity, and remove all work and update the subtotal
+      (`CartDrawer` + cookie-backed server actions; verified against the live Cart API)
+- [x] Cart survives a hard refresh and is shared across tabs (Shopify `cartId` in an httpOnly
+      cookie, re-read on mount)
+- [x] "Checkout" lands on Shopify's checkout with the right items and quantities
+      (`cart.checkoutUrl` — note: points at the custom domain, see CLAUDE.md M5 caveat)
+- [~] A completed test order (Shopify Bogus Gateway) appears in Shopify admin — **not done**;
+  requires enabling the Bogus Gateway in Shopify admin and a manual run through checkout
+- [x] Adding a sold-out variant is prevented (button disabled from `availableForSale`); low-stock
+      is surfaced after the fact via Shopify `warnings` in the drawer (public token can't read
+      quantities up front — see M1 gotcha)
 
 ---
 

@@ -14,9 +14,12 @@ shipping, POS). This repo is the customer-facing website.
 
 ✅ Milestone 0 — done. Live on Vercel (`precious-jewels.vercel.app`), CI green, `main` protected.
 
-🚧 Milestone 1 (catalog/browsing) — in progress. Data layer + browse routes merged; product
-detail page in review. Routes: `/`, `/collections`, `/collections/[handle]`, `/products/[handle]`
-— all statically generated with 15-minute ISR. See the roadmap.
+✅ Milestone 1 (catalog/browsing) — done. `/`, `/collections`, `/collections/[handle]`,
+`/products/[handle]` — statically generated with 15-minute ISR. Variant selector, gallery, SEO
+metadata.
+
+🚧 Milestone 2 (cart + checkout handoff) — in review. Slide-out cart drawer, `cartId` in a cookie,
+free-shipping progress bar, "Checkout" hands off to Shopify's hosted checkout.
 
 ## Stack
 

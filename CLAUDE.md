@@ -22,21 +22,31 @@ cheap later.
 **Milestone 0 (Foundations) — complete.** Storefront scaffolded, connected to Shopify, live on
 Vercel, CI green, `main` protected.
 
-**Milestone 1 (Catalog / browsing) — in progress, 3 staged PRs:**
+**Milestone 1 (Catalog / browsing) — complete (3 PRs merged).** `src/lib/shopify/` data layer
+(`types`, `fragments`, `queries/{products,collections}`, `reshape` raw→domain, `request` =
+`storefront<T>()` throw-on-error helper, `products`/`collections` thin ops, `format`, barrel
+`index`). Routes: `/` + `/collections` (static + ISR 900s), `/collections/[handle]` +
+`/products/[handle]` (SSG via `generateStaticParams`, `dynamicParams=false`, ISR 900s). Header/
+Footer, `ProductCard`/grid, `ProductPurchasePanel` (variant picker + gallery, selection in the URL
+via `useSyncExternalStore`). Open M1 items (user tasks): Lighthouse check, `custom.*` metafield
+definitions.
 
-- PR #1 `m1-data-layer` — **merged.** `src/lib/shopify/` data layer: `types.ts`, `fragments.ts`,
-  `queries/{products,collections}.ts`, `reshape.ts` (raw→domain), `request.ts` (`storefront<T>()`
-  helper — the `getShopName` throw-on-error contract, factored out), `products.ts` / `collections.ts`
-  (thin ops: `getProduct`, `getProducts`, `getProductHandles`, `getCollections`, `getCollection`,
-  `getCollectionProducts`, `getCollectionHandles`), `format.ts`, barrel `index.ts`.
-- PR #2 `m1-browse` — **merged.** Header/Footer in the layout, homepage rebuilt, `/collections`
-  (empty collections filtered out), `/collections/[handle]` (SSG, ISR 900s). Sort + "load more"
-  are client-side against a `'use server'` action.
-- PR #3 `m1-pdp` — **open.** `/products/[handle]` (SSG, ISR 900s), `ProductPurchasePanel` /
-  `VariantSelector` / `ProductGallery`, JSON-LD + OG metadata.
+**Milestone 2 (Cart + checkout handoff) — PR `m2-cart` open.**
 
-Next: finish M1 (Lighthouse check, optional metafield setup), then Milestone 2 (cart + checkout
-handoff).
+- `src/lib/shopify/cart.ts` + `queries/cart.ts` + `cartFragment` + `reshapeCart` —
+  `createCart` / `getCart` / `addCartLines` / `updateCartLines` / `removeCartLines`, each returning
+  `{ cart, warnings }`. `constants.ts` holds `FREE_SHIPPING_THRESHOLD` ($100) + `CART_COOKIE`.
+- `src/components/cart/actions.ts` (`'use server'`) — reads/writes the `pj_cart` httpOnly cookie via
+  `cookies()`, recreates the cart if the stored id is dead. `CartProvider` (client) hydrates on
+  mount via `getCartAction` so **`layout.tsx` stays statically rendered** (reading the cookie in the
+  layout would force every route dynamic — confirmed the build still shows all routes ○/●).
+- UI: `CartDrawer` (slide-out: line items, qty steppers, remove, warnings banner, subtotal, free-
+  shipping bar, Checkout → `checkoutUrl`), `CartButton` (count badge) in the header,
+  `AddToCartButton` in `ProductPurchasePanel`.
+
+Next: merge `m2-cart` (after a browser click-through of the preview — the interactive flow wasn't
+browser-tested locally, only the Cart API + build/types/lint), Bogus-Gateway test order, then
+Milestone 3.
 
 Done:
 
@@ -166,6 +176,23 @@ fetch failed` means the request never got there — almost always a malformed `S
   `Title: ["Default Title"]` — `reshape.ts` strips it so `product.options.length === 0` means
   "no variant picker".
 
+### M2 (cart) gotchas
+
+- **Cart stock limits come back in `warnings`, not `userErrors`.** `cartLinesAdd`/`Update` with a
+  quantity above what's in stock still "succeeds" — Shopify silently clamps the line and adds a
+  `warnings` entry (`MERCHANDISE_NOT_ENOUGH_STOCK` / `MERCHANDISE_OUT_OF_STOCK`). `resolveMutation`
+  in `cart.ts` throws only on `userErrors`; it passes `warnings` through, and `CartDrawer` shows
+  them. Many real products have inventory of 1, so this fires a lot.
+- **`checkoutUrl` uses the custom domain** — `https://preciousjewels.co/cart/c/<token>`, not
+  `.myshopify.com`. Works today (that domain serves the live Shopify theme and Shopify routes
+  `/cart/c/*` to checkout). **At the M5 domain cutover** (`preciousjewels.co` → Vercel) this needs
+  revisiting — checkout will need to resolve to a Shopify-controlled host.
+- **The cart is client-hydrated on purpose.** `layout.tsx` must never read the `pj_cart` cookie
+  (or call `cookies()`) — that would make every route dynamic and undo the M1 SSG. Cookie access
+  lives only in `src/components/cart/actions.ts` (`'use server'`); `CartProvider` fetches on mount.
+- `cartLinesAdd` with a `merchandiseId` already in the cart **merges** into that line — no
+  client-side dedupe needed.
+
 ## Conventions to keep following
 
 - All Shopify calls live under `src/lib/shopify/` — client, one query file per concern
@@ -193,14 +220,17 @@ fetch failed` means the request never got there — almost always a malformed `S
 
 ## Next steps (pick up here)
 
-1. Merge PR #3 (`m1-pdp`). Then M1's code is done.
-2. Close out M1 DoD: run Lighthouse mobile on a deployed PDP (target ≥ 90); optionally have the
-   user define `custom.materials` / `custom.care` / `custom.sizing` metafields in Shopify admin so
-   the PDP detail sections populate.
-3. Milestone 2 — cart + checkout handoff. See ROADMAP.md M2. Cart functions go in
-   `src/lib/shopify/` (`createCart`, `addCartLines`, …); `cartId` in a cookie; slide-out drawer;
-   "Checkout" → Shopify's `checkoutUrl`. The disabled add-to-cart button in `ProductPurchasePanel`
-   is the hook point.
+1. Merge PR `m2-cart` after clicking through the Vercel preview: add to cart from a PDP, drawer
+   opens, badge updates, qty/remove work, refresh keeps the cart, Checkout reaches Shopify.
+2. Close out remaining DoD items (user tasks): M1 Lighthouse ≥ 90 on a PDP; M1 `custom.*` metafield
+   definitions in Shopify admin; M2 Bogus-Gateway test order (enable it in Shopify admin first).
+3. **The Moonstone design pass** — the user provided a paid Shopify theme ("Moonstone", Dawn v11)
+   as the visual/structural target. See the `moonstone-design-reference` memory. Current UI is a
+   clean-minimal Tailwind placeholder; reskinning to Moonstone (Ovo/Jost fonts, cream-sand-black
+   palette, sharp corners + rounded variant pills, section rhythm, PDP collapsible tabs) is its own
+   milestone-sized chunk. User wants function (M2/M3) before the redesign.
+4. Milestone 3 onward — see ROADMAP.md.
 
-The M1 branches also each carried a small docs commit alongside the code commit (M0 wrap-up on
-PR #1, M1 DoD + gotchas on PR #3). Pattern: code commit + docs commit per PR.
+Delivery pattern that's working: staged PRs, each with a code commit + a docs commit; plan written
+to a plan file and approved before building; live GraphQL probes to de-risk the Shopify surface
+before writing the data layer.
