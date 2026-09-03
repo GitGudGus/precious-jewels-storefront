@@ -31,22 +31,31 @@ Footer, `ProductCard`/grid, `ProductPurchasePanel` (variant picker + gallery, se
 via `useSyncExternalStore`). Open M1 items (user tasks): Lighthouse check, `custom.*` metafield
 definitions.
 
-**Milestone 2 (Cart + checkout handoff) — PR `m2-cart` open.**
+**Milestone 2 (Cart + checkout handoff) — merged.** `src/lib/shopify/cart.ts` + `queries/cart.ts`
 
-- `src/lib/shopify/cart.ts` + `queries/cart.ts` + `cartFragment` + `reshapeCart` —
-  `createCart` / `getCart` / `addCartLines` / `updateCartLines` / `removeCartLines`, each returning
-  `{ cart, warnings }`. `constants.ts` holds `FREE_SHIPPING_THRESHOLD` ($100) + `CART_COOKIE`.
-- `src/components/cart/actions.ts` (`'use server'`) — reads/writes the `pj_cart` httpOnly cookie via
-  `cookies()`, recreates the cart if the stored id is dead. `CartProvider` (client) hydrates on
-  mount via `getCartAction` so **`layout.tsx` stays statically rendered** (reading the cookie in the
-  layout would force every route dynamic — confirmed the build still shows all routes ○/●).
-- UI: `CartDrawer` (slide-out: line items, qty steppers, remove, warnings banner, subtotal, free-
-  shipping bar, Checkout → `checkoutUrl`), `CartButton` (count badge) in the header,
-  `AddToCartButton` in `ProductPurchasePanel`.
+- `cartFragment` + `reshapeCart` (`createCart`/`getCart`/`add`/`update`/`removeCartLines`, each
+  `{ cart, warnings }`). `constants.ts` = `FREE_SHIPPING_THRESHOLD` ($100) + `CART_COOKIE`.
+  `src/components/cart/actions.ts` (`'use server'`) reads/writes the `pj_cart` httpOnly cookie;
+  `CartProvider` (client) hydrates on mount so `layout.tsx` stays static. UI: `CartDrawer`,
+  `CartButton`, `AddToCartButton`. Post-merge incident: the Shopify client leaked into the browser
+  bundle via a barrel import → white screen; hotfixed (#5) + `server-only` guard (#6). See M2 gotchas.
 
-Next: merge `m2-cart` (after a browser click-through of the preview — the interactive flow wasn't
-browser-tested locally, only the Cart API + build/types/lint), Bogus-Gateway test order, then
-Milestone 3.
+**Moonstone redesign — in progress.** Reskinning the placeholder UI to the paid theme the user
+provided (see `moonstone-design-reference` memory). **No dark mode** (dropped — `dark:` classes
+being removed page by page). Fonts: **Ovo** (serif headings) + **Jost** (body, Futura sub) via
+`next/font`. Design tokens live in `src/app/globals.css` `@theme` (`--color-bg` cream / `--color-surface`
+sand / `--color-ink` / `--color-line`; `--font-serif`/`--font-sans`; `--container-page`;
+`--radius-pill`). Primitives in `src/components/ui/`: `Button`/`ButtonLink`, `Section` (full-bleed
+bands), `Reveal` (scroll-in), `Prose` (Shopify richtext). Staged PRs:
+
+- `redesign-foundation` — **open.** Tokens, fonts, `ui/` primitives, shell (Header/HeaderBar with
+  announcement strip + centred serif wordmark, Footer, product/collection cards, cart drawer).
+- Next: homepage rebuild (Section rhythm), then PDP + collection pages (Ovo titles, `<Prose>`,
+  collapsible metafield tabs, pill variant selector), then polish (`not-found`, loading, mobile nav,
+  full `dark:`/`neutral-` sweep).
+
+Deferred: M1 Lighthouse check (do it during the PDP redesign PR); M1 `custom.*` metafields; M2
+Bogus-Gateway test order — all user tasks. M3 (accounts + content pages) comes after the redesign.
 
 Done:
 
