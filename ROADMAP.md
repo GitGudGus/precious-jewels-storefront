@@ -145,8 +145,8 @@ Headless-channel token flow, GraphQL basics, connecting a repo to a host, what C
 - [x] The same page is live on a `*.vercel.app` URL (`precious-jewels.vercel.app`)
 - [x] Opening a PR runs lint + typecheck + build automatically
 - [x] `main` can't be pushed to directly (GitHub ruleset "main protection", active; repo made
-  public to unlock rulesets on the free plan); no secrets are in git history (verified — `.env.local`
-  never tracked, token absent from all history)
+      public to unlock rulesets on the free plan); no secrets are in git history (verified — `.env.local`
+      never tracked, token absent from all history)
 
 ---
 
@@ -188,11 +188,18 @@ optimization, modelling real product data, GraphQL pagination with cursors.
 
 **Definition of done**
 
-- [ ] Every collection and product from Shopify renders with correct prices and images
-- [ ] Picking a variant updates price, image, and the add-to-cart button's enabled state
-- [ ] Lighthouse mobile performance score ≥ 90 on a product page
-- [ ] Metafield content (materials, care) shows on the PDP
-- [ ] No layout shift as images load
+- [x] Every collection and product from Shopify renders with correct prices and images
+      (351 product pages + 16 collection pages prerendered; `/`, `/collections`,
+      `/collections/[handle]`, `/products/[handle]`)
+- [x] Picking a variant updates price, image, and the add-to-cart button's enabled state
+      (`ProductPurchasePanel`; selection stored in the URL via `useSyncExternalStore`)
+- [~] Lighthouse mobile performance score ≥ 90 on a product page — **not yet measured**; needs a
+  manual run against the deployed preview
+- [~] Metafield content (materials, care) shows on the PDP — code renders `custom.materials` /
+  `custom.care` / `custom.sizing` when present; **no metafield definitions exist in Shopify
+  admin yet**, so nothing shows. User to define + fill them.
+- [x] No layout shift as images load (`next/image` with intrinsic `width`/`height` or `fill`
+      inside fixed-aspect containers) — spot-checked, not formally measured
 
 ---
 
