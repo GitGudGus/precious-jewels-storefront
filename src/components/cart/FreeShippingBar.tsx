@@ -12,26 +12,26 @@ export function FreeShippingBar({ subtotal }: { subtotal: Money }) {
   );
 
   return (
-    <div className="space-y-1.5">
-      <p className="text-xs text-neutral-600 dark:text-neutral-300">
+    <div className="space-y-2">
+      <p className="text-xs text-ink-muted">
         {remaining > 0 ? (
           <>
             You&rsquo;re{' '}
-            <span className="font-medium text-neutral-900 dark:text-neutral-100">
+            <span className="text-ink">
               {formatPrice({
                 amount: remaining.toFixed(2),
                 currencyCode: subtotal.currencyCode,
               })}
             </span>{' '}
-            away from free shipping
+            from free shipping
           </>
         ) : (
           'Your order qualifies for free shipping'
         )}
       </p>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800">
+      <div className="h-0.5 w-full bg-line">
         <div
-          className="h-full rounded-full bg-neutral-950 transition-all duration-300 dark:bg-white"
+          className="h-full bg-ink transition-all duration-300"
           style={{ width: `${percent}%` }}
         />
       </div>
