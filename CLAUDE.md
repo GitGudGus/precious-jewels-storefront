@@ -84,18 +84,19 @@ Shopify admin; we just render it — **no CMS**.
 pages work meanwhile; not a launch blocker. (Old `/account` deep links will 404 post-cutover —
 acceptable.)
 
-**Milestone 5 (Launch prep) — code done, cutover pending (operator).**
+**Milestone 5 (Launch prep) — all code merged (#11, #12, #13). Cutover pending (operator).**
 
-- PR #11 `m5-launch-critical` (merged) — `src/app/robots.ts`; `src/components/seo/JsonLd.tsx`
-  (`Organization` in layout, `Breadcrumb` + `Product` on PDP/collection); `alternates.canonical` on
-  every route; `next.config` redirects (`/blogs/news*` → `/journal*`, nested collection-product
-  URLs, `/cart` → `/`, `/search` → `/collections`); a11y (skip link + `#main`, global
-  `:focus-visible` ring); `reshape.ts` `normalizeCheckoutUrl`.
-- PR `m5-monitoring` (open) — `@vercel/analytics` + `@vercel/speed-insights` in the layout;
+- #11 `m5-launch-critical` — `src/app/robots.ts`; `src/components/seo/JsonLd.tsx` (`Organization`
+  in layout, `Breadcrumb` + `Product` on PDP/collection); `alternates.canonical` on every route;
+  `next.config` redirects (`/blogs/news*` → `/journal*`, nested collection-product URLs, `/cart` →
+  `/`, `/search` → `/collections`); a11y (skip link + `#main`, global `:focus-visible` ring);
+  `reshape.ts` `normalizeCheckoutUrl` (fallback only — see checkout note below).
+- #12 `m5-monitoring` — `@vercel/analytics` + `@vercel/speed-insights` in the layout;
   `@sentry/nextjs` **env-gated** (`src/instrumentation.ts` + `src/sentry.{server,edge}.config.ts` +
   `src/instrumentation-client.ts` + `src/app/global-error.tsx`; `next.config` only calls
   `withSentryConfig` — imported from `@sentry/nextjs/config` in v10 — when `SENTRY_AUTH_TOKEN` is
   set, so CI/local stay on the plain Turbopack-clean path); `docs/launch-checklist.md`.
+- #13 `m5-checklist-fix` — rewrote the checklist to the "swap the primary domain" fix (below).
 
 **⚠️ Checkout domain at cutover (verified 2026-09-03).** Shopify issues `cart.checkoutUrl` on the
 **primary domain**. Today primary = `preciousjewels.co` → checkout URLs on `preciousjewels.co`,
@@ -113,10 +114,13 @@ tested this and reverted (the live store bounced to the raw myshopify URL). Neve
 Note: `preciousjewels.co` currently serves a **password-protected** Shopify store (dev mode) — not
 publicly live. "Remove password" is a cutover step.
 
-Next: merge `m5-monitoring`, then the owner works `docs/launch-checklist.md`. Then M4 (search) / M3b
-(accounts). Backlog: Instagram → journal feed (see `instagram-to-blog-idea` memory), real OG image
-
-- logo, contact form, newsletter wiring.
+The storefront is feature-complete for launch (browse → PDP → cart → Shopify checkout, full
+Moonstone design, all content/legal pages, SEO, monitoring). Everything left before going live is
+**operator work in `docs/launch-checklist.md`** (real card test, Search Console, OG image + logo,
+Lighthouse, the DNS/primary-domain cutover). Next build milestones: **M4** (search/filtering,
+reviews, related products) or **M3b** (headless customer accounts). Backlog: Instagram → journal
+feed (see `instagram-to-blog-idea` memory), real hero photography, contact form, newsletter wiring,
+mobile nav drawer, sticky mobile add-to-cart.
 
 Done:
 
@@ -302,17 +306,26 @@ fetch failed` means the request never got there — almost always a malformed `S
 
 ## Next steps (pick up here)
 
-1. Merge PR `m2-cart` after clicking through the Vercel preview: add to cart from a PDP, drawer
-   opens, badge updates, qty/remove work, refresh keeps the cart, Checkout reaches Shopify.
-2. Close out remaining DoD items (user tasks): M1 Lighthouse ≥ 90 on a PDP; M1 `custom.*` metafield
-   definitions in Shopify admin; M2 Bogus-Gateway test order (enable it in Shopify admin first).
-3. **The Moonstone design pass** — the user provided a paid Shopify theme ("Moonstone", Dawn v11)
-   as the visual/structural target. See the `moonstone-design-reference` memory. Current UI is a
-   clean-minimal Tailwind placeholder; reskinning to Moonstone (Ovo/Jost fonts, cream-sand-black
-   palette, sharp corners + rounded variant pills, section rhythm, PDP collapsible tabs) is its own
-   milestone-sized chunk. User wants function (M2/M3) before the redesign.
-4. Milestone 3 onward — see ROADMAP.md.
+Everything through M5 code is merged; `main` is deployable. Options for the next session, in
+likely priority order:
 
-Delivery pattern that's working: staged PRs, each with a code commit + a docs commit; plan written
-to a plan file and approved before building; live GraphQL probes to de-risk the Shopify surface
-before writing the data layer.
+1. **Support the launch.** The owner works `docs/launch-checklist.md`. Claude tasks that may come
+   up: create a real 1200×630 OG image (`src/app/opengraph-image.png`) + wire it in `layout.tsx`;
+   a proper logo for the `Organization` JSON-LD; add redirects for URLs a live-site crawl turns
+   up; help debug the cutover.
+2. **Milestone 4 — search & merchandising.** Shopify Search & Discovery app powers `search()` +
+   filter facets via the Storefront API. Build `/search` (replace the `/search → /collections`
+   redirect), predictive search in the header, faceted filtering on collection pages (URL state),
+   related products on the PDP, a reviews integration (Judge.me / metaobjects). See ROADMAP M4.
+3. **Milestone 3b — headless customer accounts.** Customer Account API (OAuth). Needs Shopify
+   admin config first. See ROADMAP M3.
+4. **Backlog** — Instagram → journal feed (`instagram-to-blog-idea` memory), contact form,
+   newsletter capture, mobile nav drawer, sticky mobile add-to-cart, real hero photography.
+
+**Working process:** plan mode → plan file → approval → staged PRs, each with a code commit + a
+docs commit → CI green → user clicks the Vercel preview → merge. Live GraphQL probes (a scratch
+`.mjs` reading `.env.local`) to de-risk the Shopify surface before writing the data layer.
+**Browser-verify every UI PR** in headless Opera (`--headless --dump-dom --enable-logging=stderr`,
+also `--screenshot`) — CI and SSR checks miss client-runtime and visual breakage (the M2 white
+screen). Client components import Shopify **values** from leaf modules
+(`@/lib/shopify/{format,constants,types}`), never the barrel.

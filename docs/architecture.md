@@ -1,6 +1,7 @@
 # Architecture
 
-_Last updated: 2026-09-03. Keep this current as the system grows._
+_Last updated: 2026-09-03 (M0–M3a + Moonstone redesign + M5 code merged). Keep this current as the
+system grows._
 
 ## Overview
 
@@ -44,32 +45,62 @@ the storefront. A second system (Django wholesale portal) is added in Phase 2.
 
 ## Key constraints
 
-- **All Shopify access goes through `lib/shopify/`.** No exceptions. This is what keeps framework
-  and hosting choices reversible.
-- **Checkout is never rebuilt.** The storefront's job ends at the `checkoutUrl` handoff.
-- **The Storefront API public token is safe in the browser.** No BFF is needed to proxy it.
+- **All Shopify access goes through `src/lib/shopify/`.** No exceptions. Keeps framework/hosting
+  choices reversible. Client components import **values** only from the leaf modules
+  (`format`, `constants`, `types`) — never the `index` barrel, which would drag the Shopify SDK
+  into the browser bundle (this caused a production white-screen once; `client.ts` now has
+  `import 'server-only'`).
+- **Checkout is never rebuilt.** The storefront's job ends at the `checkoutUrl` handoff. Shopify
+  issues that URL on its **primary domain**; at the domain cutover the primary is switched to
+  `shop-precious-jewels.myshopify.com`, which resolves to Shopify's hosted checkout on `shop.app`.
+  See `launch-checklist.md` §0.
+- **The Storefront API public token is safe in the browser.** No BFF needed to proxy it.
   See [decisions/0003-defer-django-bff.md](decisions/0003-defer-django-bff.md).
 - **Wholesale orders become Shopify draft orders**, so retail and wholesale share one fulfilment
   and inventory pipeline.
 
-## Data model notes
+## Storefront internals (`src/`)
 
-Product data lives in Shopify. Jewelry-specific attributes are **Shopify metafields** defined in
-admin and explicitly exposed to the Storefront API:
+- **`lib/shopify/`** — `client.ts` (lazy, `server-only`) → `request.ts` (`storefront<T>()`, throws
+  on GraphQL `errors` / missing `data`) → per-concern op files (`products`, `collections`, `cart`,
+  `content`, `shop`). `queries/*` hold GraphQL strings composed from shared `fragments.ts`.
+  `reshape.ts` is the boundary: raw GraphQL shapes never leave the folder. `index.ts` is the
+  public barrel (server-side consumers only).
+- **Rendering** — every route is statically generated (`generateStaticParams`,
+  `dynamicParams=false`) with 15-minute ISR (`export const revalidate = 900`). Nothing is
+  dynamic. `layout.tsx` reads no request state so it stays static; the cart is **client-hydrated**
+  (a `CartProvider` fetches it on mount via a server action). Interactivity — variant picker,
+  collection sort/pagination — is client components reading/writing URL state or calling
+  `'use server'` actions, so pages stay static.
+- **Cart** — Shopify `cartId` in an httpOnly `pj_cart` cookie (`src/components/cart/actions.ts`).
+- **Design** — Moonstone theme reskin: tokens in `src/app/globals.css` `@theme`, primitives in
+  `src/components/ui/`. One warm-light palette, no dark mode. Ovo + Jost via `next/font`.
+- **Ops** — `src/app/{robots,sitemap}.ts`; JSON-LD in `src/components/seo/`; `@vercel/analytics` +
+  `@vercel/speed-insights`; `@sentry/nextjs` env-gated (inert without `NEXT_PUBLIC_SENTRY_DSN`).
 
-- `custom.materials` (e.g. "14k gold-filled", "925 sterling silver", "18k solid gold")
-- `custom.care_instructions`
-- `custom.sizing_guide`
-- `custom.made_to_order` (boolean) + `custom.lead_time_days`
-- `custom.certification` (for solid-gold / gemstone pieces, if applicable)
+## Data model notes (as the live store actually is, 2026-09-03)
 
-Variants use Shopify option sets — typically **Metal × Size** or **Metal × Length**. The PDP must
-handle missing combinations (query `availableForSale` and `quantityAvailable` per variant).
+Product data lives in Shopify. The storefront queries these jewelry metafields **if present**:
+`custom.materials`, `custom.care`, `custom.sizing` (rendered as `<details>` accordions on the PDP).
+**None are defined in the store yet** — the PDP degrades cleanly. Any future keys (`made_to_order`,
+`lead_time_days`, certification) would be added to the query in `src/lib/shopify/fragments.ts`.
+
+Real catalog shape: ~350 products, mostly **single-variant**; a handful have one `Color` axis
+(Gold/Silver), one has `Size`. **No metal/length axes.** The public Storefront token **cannot read
+inventory quantities** (`totalInventory` / `quantityAvailable` → `ACCESS_DENIED`) — the storefront
+uses `availableForSale` only, and surfaces post-add stock clamping from Shopify's cart `warnings`.
+
+Online-store **pages** (`about-us`, `faqs`, `sizing-chart`, `contact-us-1`, `wholesale`) and the
+four **shop policies** are authored in Shopify admin and rendered by `/pages/[handle]` +
+`/policies/[handle]`. One blog (`news`), currently empty, backs `/journal`.
 
 ## Environments
 
-| Env        | Storefront          | Shopify                                                |
-| ---------- | ------------------- | ------------------------------------------------------ |
-| local      | `localhost:3000`    | live Shopify store, test-mode checkout (Bogus Gateway) |
-| preview    | Vercel PR deploys   | same                                                   |
-| production | `preciousjewels.co` | live checkout                                          |
+| Env        | Storefront                     | Shopify                                           |
+| ---------- | ------------------------------ | ------------------------------------------------- |
+| local      | `localhost:3000`               | live store (`shop-precious-jewels.myshopify.com`) |
+| preview    | Vercel PR deploys              | same                                              |
+| production | `preciousjewels.co` (post-cut) | live checkout via `shop.app`                      |
+
+Local dev and CI need only `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_STOREFRONT_ACCESS_TOKEN`. The store is
+currently **password-protected** (not publicly launched).
