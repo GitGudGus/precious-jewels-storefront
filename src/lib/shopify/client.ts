@@ -1,3 +1,7 @@
+// Build-time guard: if this module ever reaches a client bundle again (e.g. via a
+// barrel re-export imported from a Client Component), the build fails here
+// instead of shipping a broken site. See CLAUDE.md, "M2 (cart) gotchas".
+import 'server-only';
 import {
   createStorefrontApiClient,
   type StorefrontApiClient,
