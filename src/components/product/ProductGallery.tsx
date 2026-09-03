@@ -28,9 +28,7 @@ export function ProductGallery({
   const [zoomed, setZoomed] = useState(false);
 
   if (images.length === 0) {
-    return (
-      <div className="aspect-square w-full rounded-lg bg-neutral-100 dark:bg-neutral-900" />
-    );
+    return <div className="aspect-square w-full bg-surface" />;
   }
 
   const active = images[Math.min(index, images.length - 1)];
@@ -40,7 +38,7 @@ export function ProductGallery({
       <button
         type="button"
         onClick={() => setZoomed((value) => !value)}
-        className="relative block aspect-square w-full overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900"
+        className="relative block aspect-square w-full overflow-hidden bg-surface"
         aria-label={zoomed ? 'Zoom out' : 'Zoom in'}
       >
         <Image
@@ -67,10 +65,8 @@ export function ProductGallery({
               }}
               aria-label={`View image ${i + 1}`}
               aria-current={i === index}
-              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-md border ${
-                i === index
-                  ? 'border-neutral-900 dark:border-white'
-                  : 'border-transparent'
+              className={`relative h-16 w-16 shrink-0 overflow-hidden border ${
+                i === index ? 'border-ink' : 'border-line'
               }`}
             >
               <Image

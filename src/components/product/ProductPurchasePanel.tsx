@@ -100,7 +100,7 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
     selectedVariant?.image?.url ?? product.featuredImage?.url ?? null;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
+    <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
       <ProductGallery
         key={activeImageUrl ?? 'default'}
         images={product.images}
@@ -108,11 +108,9 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
         initialImageUrl={activeImageUrl}
       />
 
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            {product.title}
-          </h1>
+      <div className="flex flex-col gap-8 lg:pt-6">
+        <div className="space-y-3">
+          <h1 className="text-3xl md:text-4xl">{product.title}</h1>
           <Price
             min={price}
             max={
@@ -120,7 +118,7 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
                 ? maxPrice
                 : undefined
             }
-            className="text-lg text-neutral-700 dark:text-neutral-200"
+            className="text-lg text-ink-muted"
           />
         </div>
 

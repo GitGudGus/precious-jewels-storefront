@@ -31,31 +31,41 @@ Footer, `ProductCard`/grid, `ProductPurchasePanel` (variant picker + gallery, se
 via `useSyncExternalStore`). Open M1 items (user tasks): Lighthouse check, `custom.*` metafield
 definitions.
 
-**Milestone 2 (Cart + checkout handoff) — merged.** `src/lib/shopify/cart.ts` + `queries/cart.ts`
+**Milestone 2 (Cart + checkout handoff) — merged.** `src/lib/shopify/cart.ts` + `queries/cart.ts` +
+`cartFragment` + `reshapeCart` (`createCart`/`getCart`/`add`/`update`/`removeCartLines`, each
+returns `{ cart, warnings }`). `constants.ts` = `FREE_SHIPPING_THRESHOLD` ($100) + `CART_COOKIE`.
+`src/components/cart/actions.ts` (`'use server'`) reads/writes the `pj_cart` httpOnly cookie;
+`CartProvider` (client) hydrates on mount so `layout.tsx` stays static. UI: `CartDrawer`,
+`CartButton`, `AddToCartButton`. Post-merge incident: the Shopify client leaked into the browser
+bundle via a barrel import → white screen; hotfixed (#5) + `server-only` guard (#6). See M2 gotchas.
 
-- `cartFragment` + `reshapeCart` (`createCart`/`getCart`/`add`/`update`/`removeCartLines`, each
-  `{ cart, warnings }`). `constants.ts` = `FREE_SHIPPING_THRESHOLD` ($100) + `CART_COOKIE`.
-  `src/components/cart/actions.ts` (`'use server'`) reads/writes the `pj_cart` httpOnly cookie;
-  `CartProvider` (client) hydrates on mount so `layout.tsx` stays static. UI: `CartDrawer`,
-  `CartButton`, `AddToCartButton`. Post-merge incident: the Shopify client leaked into the browser
-  bundle via a barrel import → white screen; hotfixed (#5) + `server-only` guard (#6). See M2 gotchas.
+**Moonstone redesign — done (2 PRs).** Reskinned the placeholder UI to the paid theme the user
+provided (see `moonstone-design-reference` memory). **No dark mode** (dropped). Fonts: **Ovo**
+(serif headings) + **Jost** (body, Futura sub) via `next/font`.
 
-**Moonstone redesign — in progress.** Reskinning the placeholder UI to the paid theme the user
-provided (see `moonstone-design-reference` memory). **No dark mode** (dropped — `dark:` classes
-being removed page by page). Fonts: **Ovo** (serif headings) + **Jost** (body, Futura sub) via
-`next/font`. Design tokens live in `src/app/globals.css` `@theme` (`--color-bg` cream / `--color-surface`
-sand / `--color-ink` / `--color-line`; `--font-serif`/`--font-sans`; `--container-page`;
-`--radius-pill`). Primitives in `src/components/ui/`: `Button`/`ButtonLink`, `Section` (full-bleed
-bands), `Reveal` (scroll-in), `Prose` (Shopify richtext). Staged PRs:
+- **Design tokens** — `src/app/globals.css` `@theme`: `--color-bg` (cream `#fffdf8`) / `--color-surface`
+  (sand) / `--color-ink` / `--color-ink-muted` / `--color-ink-invert` / `--color-line`;
+  `--font-serif`/`--font-sans`; `--container-page` (1200px, → `max-w-page`); `--radius-pill`.
+  Sharp corners everywhere; `rounded-pill` only on variant pills + the cart qty stepper.
+- **`src/components/ui/`** — `Button`/`ButtonLink` (primary black-fill / outline), `Section`
+  (full-bleed colour bands, `tone` prop, `max-w-page` inner — bands sit flush), `Reveal`
+  (`IntersectionObserver` fade-in, reduced-motion safe), `Prose` (Shopify `descriptionHtml`).
+- PR 1 `redesign-foundation` (merged) — tokens, fonts, primitives, shell: `Header` → server +
+  client `HeaderBar` (announcement strip, centred serif wordmark, scroll-shrink), `Footer`,
+  product/collection cards, cart drawer, `AddToCartButton`.
+- PR 2 `redesign-pages` — every page: homepage (Section rhythm: hero → value props → new arrivals
+  → categories → newsletter), `/collections`, `/collections/[handle]` (`<Section>`, `<Prose>`,
+  restyled sort/load-more), `/products/[handle]` (Ovo title, `<Prose>`, `<details>` accordions for
+  metafields), `ProductPurchasePanel` / `VariantSelector` (pills) / `ProductGallery`, `not-found`,
+  loading. `<main>` lost its padding wrapper — pages own their layout via `<Section>`.
+  `grep -rn "dark:|neutral-|Geist" src/` → empty.
 
-- `redesign-foundation` — **open.** Tokens, fonts, `ui/` primitives, shell (Header/HeaderBar with
-  announcement strip + centred serif wordmark, Footer, product/collection cards, cart drawer).
-- Next: homepage rebuild (Section rhythm), then PDP + collection pages (Ovo titles, `<Prose>`,
-  collapsible metafield tabs, pill variant selector), then polish (`not-found`, loading, mobile nav,
-  full `dark:`/`neutral-` sweep).
+Deferred (user tasks): M1 Lighthouse ≥ 90 on a PDP; M1 `custom.*` metafields; M2 Bogus-Gateway
+test order. Redesign follow-ups if wanted: real hero photography, a proper mobile nav drawer,
+sticky add-to-cart on mobile PDP, newsletter wiring.
 
-Deferred: M1 Lighthouse check (do it during the PDP redesign PR); M1 `custom.*` metafields; M2
-Bogus-Gateway test order — all user tasks. M3 (accounts + content pages) comes after the redesign.
+Next feature work: **Milestone 3** — customer accounts (Customer Account API) + content/legal pages
+(About, FAQ, Privacy, Returns, Terms), which drop into the new design system.
 
 Done:
 
