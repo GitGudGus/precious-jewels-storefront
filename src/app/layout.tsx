@@ -6,6 +6,7 @@ import { CartDrawer } from '@/components/cart/CartDrawer';
 import { CartProvider } from '@/components/cart/CartProvider';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { SITE_URL } from '@/lib/shopify';
 
 const ovo = Ovo({
   weight: '400',
@@ -19,7 +20,7 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://precious-jewels.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Precious Jewels',
     template: '%s · Precious Jewels',

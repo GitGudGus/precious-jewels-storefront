@@ -86,6 +86,37 @@ export type Paginated<T> = {
   pageInfo: PageInfo;
 };
 
+// --- Content --------------------------------------------------------------
+
+/** An online-store page (`about-us`, `faqs`, …) authored in Shopify admin. */
+export type Page = {
+  handle: string;
+  title: string;
+  bodyHtml: string;
+  seo: SEO;
+};
+
+/** A shop policy (`privacy-policy`, `refund-policy`, `terms-of-service`, `shipping-policy`). */
+export type Policy = {
+  handle: string;
+  title: string;
+  bodyHtml: string;
+};
+
+export type ArticleListItem = {
+  handle: string;
+  title: string;
+  excerpt: string;
+  publishedAt: string;
+  image: ShopImage | null;
+};
+
+export type Article = ArticleListItem & {
+  contentHtml: string;
+  seo: SEO;
+  authorName: string | null;
+};
+
 // --- Cart -------------------------------------------------------------------
 
 /** The variant a cart line points at, flattened out of `merchandise`. */
