@@ -26,6 +26,7 @@ export async function generateMetadata({
   return {
     title: article.seo.title || article.title,
     description: article.seo.description || article.excerpt || undefined,
+    alternates: { canonical: `/journal/${handle}` },
     openGraph: article.image
       ? { images: [{ url: article.image.url, alt: article.title }] }
       : undefined,
