@@ -1,5 +1,5 @@
-import { shopifyClient } from '@/lib/shopify/client';
-import { getShopNameQuery } from '@/lib/shopify/queries/shop';
+import { getShopNameQuery } from './queries/shop';
+import { storefront } from './request';
 
 type GetShopNameResponse = {
   shop: {
@@ -8,16 +8,6 @@ type GetShopNameResponse = {
 };
 
 export async function getShopName(): Promise<string> {
-  const { data, errors } =
-    await shopifyClient.request<GetShopNameResponse>(getShopNameQuery);
-
-  if (errors) {
-    throw new Error(`Shopify Storefront API error: ${errors.message}`);
-  }
-
-  if (!data) {
-    throw new Error('Shopify Storefront API returned no data.');
-  }
-
+  const data = await storefront<GetShopNameResponse>(getShopNameQuery);
   return data.shop.name;
 }
