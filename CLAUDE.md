@@ -192,6 +192,18 @@ fetch failed` means the request never got there — almost always a malformed `S
   lives only in `src/components/cart/actions.ts` (`'use server'`); `CartProvider` fetches on mount.
 - `cartLinesAdd` with a `merchandiseId` already in the cart **merges** into that line — no
   client-side dedupe needed.
+- **Never import a value from the `@/lib/shopify` barrel in a client-reachable component.** The
+  barrel (`index.ts`) re-exports from `./cart` / `./products` / … → `./request` → `./client`
+  (the Shopify SDK). A value import drags all of that into the browser bundle. `client.ts` is now
+  lazy so it no longer _crashes_ the browser, but it's still dead weight. Client components import
+  `formatPrice`/`formatPriceRange` from `@/lib/shopify/format`, `FREE_SHIPPING_THRESHOLD` /
+  `CART_COOKIE` from `@/lib/shopify/constants`, and `COLLECTION_SORT_OPTIONS` etc. from
+  `@/lib/shopify/types`. `import type` from the barrel is fine (erased). This bit us after the M2
+  merge (`CartDrawer` in the root layout pulled the barrel into every page → white screen); fixed
+  in a hotfix. TODO: add `server-only` to `client.ts` so it fails the build instead.
+- **`npm run build` / CI does not catch client-runtime crashes** — they don't execute browser JS.
+  For anything touching a client component, load the built pages in a real browser (headless
+  Opera/Chrome `--dump-dom` + `--enable-logging=stderr` works) before merging.
 
 ## Conventions to keep following
 
