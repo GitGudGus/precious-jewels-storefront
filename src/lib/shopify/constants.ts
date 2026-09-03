@@ -17,10 +17,10 @@ export const CART_COOKIE = 'pj_cart';
 export const CART_COOKIE_MAX_AGE = 60 * 60 * 24 * 14;
 
 /**
- * Customer-facing contact address. TODO(user): confirm this — only
- * `wholesale@preciousjewels.co` is known from the store's Wholesale page.
+ * Customer-facing contact address (the store's main inbox — a branded address is
+ * planned later). Department pages still route to `returns@` / `wholesale@`.
  */
-export const CONTACT_EMAIL = 'hello@preciousjewels.co';
+export const CONTACT_EMAIL = 'preciousjewelsmia@gmail.com';
 
 /** Shopify page handle for the contact page (gets a mailto CTA on its route). */
 export const CONTACT_PAGE_HANDLE = 'contact-us-1';

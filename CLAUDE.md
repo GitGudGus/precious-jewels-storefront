@@ -64,14 +64,14 @@ Deferred (user tasks): M1 Lighthouse ≥ 90 on a PDP; M1 `custom.*` metafields; 
 test order. Redesign follow-ups if wanted: real hero photography, a proper mobile nav drawer,
 sticky add-to-cart on mobile PDP, newsletter wiring.
 
-**Milestone 3a (Content & legal pages) — PR `m3a-content` open.** The owner already authored this
-content in Shopify admin; we just render it — **no CMS**.
+**Milestone 3a (Content & legal pages) — merged.** The owner already authored this content in
+Shopify admin; we just render it — **no CMS**.
 
 - `src/lib/shopify/content.ts` + `queries/content.ts` — `getPage` / `getPageHandles` / `getPolicy`
   / `getArticles` / `getArticleHandles` / `getArticle`. `Page` / `Policy` / `Article` types +
-  reshapers. `constants.ts` gained `CONTACT_EMAIL` (**TODO: user to confirm** — the store uses
-  dept-specific addresses like `returns@` / `wholesale@`, no known generic one), `CONTACT_PAGE_HANDLE`,
-  `SITE_URL` (`https://preciousjewels.co` — the M5 domain; used for `metadataBase` + `sitemap`).
+  reshapers. `constants.ts` gained `CONTACT_EMAIL` (`preciousjewelsmia@gmail.com` — main store
+  inbox), `CONTACT_PAGE_HANDLE`, `SITE_URL` (`https://preciousjewels.co` — the M5 domain; used for
+  `metadataBase` + `sitemap`).
 - Routes (all SSG, ISR 900s): `/pages/[handle]` (about-us, faqs, sizing-chart, contact-us-1,
   wholesale — contact gets a `mailto:` CTA), `/policies/[handle]` (privacy-policy, refund-policy,
   terms-of-service, shipping-policy — empty policy → contact-line fallback), `/journal` (empty
