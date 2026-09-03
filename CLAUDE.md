@@ -97,14 +97,21 @@ acceptable.)
   `withSentryConfig` — imported from `@sentry/nextjs/config` in v10 — when `SENTRY_AUTH_TOKEN` is
   set, so CI/local stay on the plain Turbopack-clean path); `docs/launch-checklist.md`.
 
-**⚠️ Checkout domain at cutover — the standard headless fix, in `docs/launch-checklist.md` §0.**
-A headless storefront and Shopify checkout can't share the exact same domain. Shopify returns
-`cart.checkoutUrl` on the primary domain (`preciousjewels.co/cart/c/…`); rewriting to
-`*.myshopify.com` doesn't help (Shopify 301s it back to the primary). Fix: owner connects
-**`checkout.preciousjewels.co`** in Shopify admin (CNAME → `shops.myshopify.com`), sets it as the
-**primary** domain, points the apex + `www` at Vercel; then set `SHOPIFY_CHECKOUT_DOMAIN=checkout.preciousjewels.co`
-in Vercel (consumed by `normalizeCheckoutUrl`). This is the documented headless pattern, not a
-stopgap. Leave `SHOPIFY_CHECKOUT_DOMAIN` unset until the subdomain exists.
+**⚠️ Checkout domain at cutover (verified 2026-09-03).** Shopify issues `cart.checkoutUrl` on the
+**primary domain**. Today primary = `preciousjewels.co` → checkout URLs on `preciousjewels.co`,
+which 404 the moment that domain points at Vercel. **Fix: at the cutover, set primary =
+`shop-precious-jewels.myshopify.com`** (Settings → Domains). Then `checkoutUrl` →
+`shop-precious-jewels.myshopify.com/cart/c/…` → 302 → Shopify's hosted checkout on `shop.app`
+(Shopify-owned, cutover-proof). **No code / no `SHOPIFY_CHECKOUT_DOMAIN` needed** — leave it blank;
+`normalizeCheckoutUrl` in `reshape.ts` is a fallback only. `preciousjewelsmia.com` (also connected)
+is the more-branded alternative primary. **Timing:** changing the primary 301s every connected
+domain to it immediately, so do it back-to-back with the DNS switch, never before — the owner
+tested this and reverted (the live store bounced to the raw myshopify URL). Never remove
+`shop-precious-jewels.myshopify.com` — it backs `SHOPIFY_STORE_DOMAIN`. Full runbook:
+`docs/launch-checklist.md`.
+
+Note: `preciousjewels.co` currently serves a **password-protected** Shopify store (dev mode) — not
+publicly live. "Remove password" is a cutover step.
 
 Next: merge `m5-monitoring`, then the owner works `docs/launch-checklist.md`. Then M4 (search) / M3b
 (accounts). Backlog: Instagram → journal feed (see `instagram-to-blog-idea` memory), real OG image
