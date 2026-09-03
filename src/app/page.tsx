@@ -1,13 +1,14 @@
-import Link from 'next/link';
-
 import { CollectionCard } from '@/components/collection/CollectionCard';
 import { ProductGrid } from '@/components/product/ProductGrid';
+import { ButtonLink } from '@/components/ui/Button';
+import { Reveal } from '@/components/ui/Reveal';
+import { Section } from '@/components/ui/Section';
 import {
   getCollectionProducts,
   getCollections,
   getProducts,
-  type ProductListItem,
 } from '@/lib/shopify';
+import type { ProductListItem } from '@/lib/shopify/types';
 
 export const revalidate = 900;
 
@@ -20,14 +21,22 @@ const FEATURED_COLLECTION_HANDLES = [
   'anklets',
 ];
 
+const VALUE_PROPS = [
+  { title: 'Gold-filled & 18k', body: 'Real gold that lasts, not plating.' },
+  {
+    title: 'Tarnish resistant',
+    body: 'Wear it in the shower, the ocean, everywhere.',
+  },
+  { title: 'Hypoallergenic', body: 'Nickel free — kind to sensitive skin.' },
+  { title: 'Made in Miami', body: 'Designed and shipped from South Florida.' },
+];
+
 async function getNewArrivals(): Promise<ProductListItem[]> {
   const page = await getCollectionProducts({
     handle: 'new-arrivals',
     first: 8,
   });
   if (page && page.items.length > 0) return page.items;
-  // Fall back to the most recently created products if the collection is missing
-  // or empty.
   return getProducts({ first: 8, sortKey: 'CREATED_AT', reverse: true });
 }
 
@@ -43,50 +52,100 @@ export default async function Home() {
   ).filter((c): c is NonNullable<typeof c> => c !== undefined);
 
   return (
-    <div className="space-y-20">
-      <section className="flex flex-col items-center gap-5 py-14 text-center">
-        <h1 className="max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
-          Everyday gold, made to last
-        </h1>
-        <p className="max-w-xl text-neutral-600 dark:text-neutral-300">
-          Gold-filled, 18k gold, and silver jewelry from Miami. Tarnish
-          resistant, hypoallergenic, nickel free.
-        </p>
-        <Link
-          href="/collections"
-          className="rounded-full bg-neutral-950 px-6 py-3 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
-        >
-          Shop the collection
-        </Link>
-      </section>
+    <>
+      <Section
+        tone="bg"
+        innerClassName="flex flex-col items-center gap-6 py-24 text-center md:py-32"
+      >
+        <Reveal className="flex flex-col items-center gap-6">
+          <p className="text-[11px] tracking-[0.25em] text-ink-muted uppercase">
+            Precious Jewels · Miami
+          </p>
+          <h1 className="max-w-3xl text-4xl leading-tight md:text-6xl">
+            Everyday gold, made to last
+          </h1>
+          <p className="max-w-md text-ink-muted">
+            Gold-filled, 18k gold, and silver jewelry. Tarnish resistant,
+            hypoallergenic, nickel free.
+          </p>
+          <ButtonLink href="/collections" className="mt-2">
+            Shop the collection
+          </ButtonLink>
+        </Reveal>
+      </Section>
 
-      <section className="space-y-6">
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            New arrivals
-          </h2>
-          <Link
-            href="/collections/new-arrivals"
-            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
-          >
-            View all
-          </Link>
-        </div>
-        <ProductGrid products={newArrivals} />
-      </section>
+      <Section tone="surface" innerClassName="py-14">
+        <Reveal className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+          {VALUE_PROPS.map((prop) => (
+            <div key={prop.title} className="space-y-1.5">
+              <h3 className="text-sm tracking-[0.08em]">{prop.title}</h3>
+              <p className="text-xs text-ink-muted">{prop.body}</p>
+            </div>
+          ))}
+        </Reveal>
+      </Section>
+
+      <Section tone="bg">
+        <Reveal>
+          <div className="mb-10 flex items-baseline justify-between">
+            <h2 className="text-2xl md:text-3xl">New arrivals</h2>
+            <ButtonLink
+              href="/collections/new-arrivals"
+              variant="outline"
+              className="hidden px-6 py-2.5 sm:inline-flex"
+            >
+              View all
+            </ButtonLink>
+          </div>
+          <ProductGrid products={newArrivals} />
+        </Reveal>
+      </Section>
 
       {featured.length > 0 && (
-        <section className="space-y-6">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Shop by category
-          </h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {featured.map((collection) => (
-              <CollectionCard key={collection.handle} collection={collection} />
-            ))}
-          </div>
-        </section>
+        <Section tone="surface">
+          <Reveal>
+            <h2 className="mb-10 text-center text-2xl md:text-3xl">
+              Shop by category
+            </h2>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {featured.map((collection) => (
+                <CollectionCard
+                  key={collection.handle}
+                  collection={collection}
+                />
+              ))}
+            </div>
+          </Reveal>
+        </Section>
       )}
-    </div>
+
+      <Section
+        tone="ink"
+        innerClassName="flex flex-col items-center gap-5 py-20 text-center"
+      >
+        <h2 className="max-w-xl text-2xl md:text-3xl">
+          Join the list for first access
+        </h2>
+        <p className="max-w-sm text-sm text-ink-invert/70">
+          New drops, restocks, and the occasional discount. No spam.
+        </p>
+        {/* Visual only for now — wiring email capture (Shopify marketing
+            consent) is a later milestone. */}
+        <div className="mt-2 flex w-full max-w-sm border border-ink-invert/30">
+          <input
+            type="email"
+            placeholder="Email address"
+            aria-label="Email address"
+            className="flex-1 bg-transparent px-4 py-3 text-sm text-ink-invert placeholder:text-ink-invert/50 focus:outline-none"
+          />
+          <button
+            type="button"
+            className="bg-ink-invert px-6 text-[11px] tracking-[0.15em] text-ink uppercase"
+          >
+            Sign up
+          </button>
+        </div>
+      </Section>
+    </>
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 
 import { ProductGrid } from '@/components/product/ProductGrid';
+import { Button } from '@/components/ui/Button';
 import {
   COLLECTION_SORT_OPTIONS,
   DEFAULT_COLLECTION_SORT,
@@ -69,9 +70,9 @@ export function CollectionProducts({
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-end">
-        <label className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
+    <div className="space-y-10">
+      <div className="flex justify-end border-b border-line pb-4">
+        <label className="flex items-center gap-3 text-[11px] tracking-[0.16em] text-ink-muted uppercase">
           Sort
           <select
             value={sort}
@@ -79,7 +80,7 @@ export function CollectionProducts({
               changeSort(event.target.value as CollectionSortSlug)
             }
             disabled={pending}
-            className="rounded-md border border-neutral-300 bg-transparent px-2 py-1.5 text-neutral-900 disabled:opacity-60 dark:border-neutral-700 dark:text-neutral-100"
+            className="border border-line bg-transparent px-3 py-2 text-xs tracking-[0.1em] text-ink uppercase disabled:opacity-60"
           >
             {SORT_ENTRIES.map(([slug, option]) => (
               <option key={slug} value={slug}>
@@ -96,14 +97,14 @@ export function CollectionProducts({
 
       {cursor && (
         <div className="flex justify-center">
-          <button
-            type="button"
+          <Button
+            variant="outline"
             onClick={loadMore}
             disabled={pending}
-            className="rounded-full border border-neutral-300 px-6 py-2.5 text-sm font-medium hover:bg-neutral-100 disabled:opacity-60 dark:border-neutral-700 dark:hover:bg-neutral-900"
+            className="px-10"
           >
             {pending ? 'Loading…' : 'Load more'}
-          </button>
+          </Button>
         </div>
       )}
     </div>

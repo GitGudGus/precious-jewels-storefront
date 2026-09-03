@@ -18,18 +18,24 @@ shipping, POS). This repo is the customer-facing website.
 `/products/[handle]` — statically generated with 15-minute ISR. Variant selector, gallery, SEO
 metadata.
 
-🚧 Milestone 2 (cart + checkout handoff) — in review. Slide-out cart drawer, `cartId` in a cookie,
+✅ Milestone 2 (cart + checkout handoff) — done. Slide-out cart drawer, `cartId` in a cookie,
 free-shipping progress bar, "Checkout" hands off to Shopify's hosted checkout.
+
+🎨 Design pass — done. Reskinned to the "Moonstone" theme: Ovo/Jost type, warm cream/sand/ink
+palette, full-bleed section bands. Tokens in `src/app/globals.css`, primitives in
+`src/components/ui/`.
+
+🚧 Milestone 3 (accounts + content) — next.
 
 ## Stack
 
-| Layer        | Choice                           |
-| ------------ | -------------------------------- |
-| Framework    | Next.js (App Router, TypeScript) |
-| Styling      | Tailwind CSS + shadcn/ui         |
-| Commerce API | Shopify Storefront API (GraphQL) |
-| Hosting      | Vercel                           |
-| Errors       | Sentry                           |
+| Layer        | Choice                              |
+| ------------ | ----------------------------------- |
+| Framework    | Next.js 16 (App Router, TypeScript) |
+| Styling      | Tailwind CSS 4, Ovo + Jost (Google) |
+| Commerce API | Shopify Storefront API (GraphQL)    |
+| Hosting      | Vercel                              |
+| Errors       | Sentry (M5)                         |
 
 Phase 2 adds a separate repo: a Django + DRF wholesale/B2B portal.
 

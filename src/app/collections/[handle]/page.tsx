@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { CollectionProducts } from '@/components/collection/CollectionProducts';
+import { Prose } from '@/components/ui/Prose';
+import { Section } from '@/components/ui/Section';
 import {
   COLLECTION_SORT_OPTIONS,
   DEFAULT_COLLECTION_SORT,
@@ -50,21 +52,21 @@ export default async function CollectionPage({
   if (!collection || !firstPage) notFound();
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {collection.title}
-        </h1>
+    <Section tone="bg" innerClassName="space-y-10">
+      <header className="space-y-3 text-center">
+        <h1 className="text-3xl md:text-4xl">{collection.title}</h1>
         {collection.descriptionHtml && (
-          <div
-            className="max-w-2xl text-sm text-neutral-600 [&_a]:underline dark:text-neutral-300"
-            dangerouslySetInnerHTML={{ __html: collection.descriptionHtml }}
+          <Prose
+            html={collection.descriptionHtml}
+            className="mx-auto max-w-xl text-center"
           />
         )}
-      </div>
+      </header>
 
       {firstPage.items.length === 0 ? (
-        <p className="text-neutral-500">No products in this collection yet.</p>
+        <p className="text-center text-sm text-ink-muted">
+          No products in this collection yet.
+        </p>
       ) : (
         <CollectionProducts
           handle={handle}
@@ -73,6 +75,6 @@ export default async function CollectionPage({
           initialPageInfo={firstPage.pageInfo}
         />
       )}
-    </div>
+    </Section>
   );
 }

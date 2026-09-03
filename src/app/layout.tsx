@@ -37,11 +37,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       <body className="flex min-h-full flex-col">
         <CartProvider>
           <Header />
-          {/* PR3/PR4 pages render full-bleed <Section> bands; until then this
-              wrapper keeps the existing pages padded. */}
-          <main className="mx-auto w-full max-w-page flex-1 px-6 py-10 md:px-10">
-            {children}
-          </main>
+          {/* Pages own their layout — full-bleed <Section> bands, or a single
+              <Section> wrapper for the not-yet-rebuilt ones. */}
+          <main className="flex-1">{children}</main>
           <Footer />
           <CartDrawer />
         </CartProvider>

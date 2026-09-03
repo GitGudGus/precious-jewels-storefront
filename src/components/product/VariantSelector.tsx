@@ -32,13 +32,13 @@ export function VariantSelector({
   if (options.length === 0) return null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {options.map((option) => (
         <fieldset key={option.id}>
-          <legend className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+          <legend className="text-[11px] tracking-[0.16em] text-ink-muted uppercase">
             {option.name}
           </legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {option.values.map((value) => {
               const candidate = { ...selection, [option.name]: value };
               const available = variants.some(
@@ -57,12 +57,12 @@ export function VariantSelector({
                   disabled={!available}
                   title={available ? undefined : `${value} — unavailable`}
                   className={[
-                    'rounded-full border px-4 py-1.5 text-sm transition-colors',
+                    'rounded-pill border px-5 py-2 text-sm transition-colors',
                     isSelected
-                      ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
-                      : 'border-neutral-300 hover:border-neutral-500 dark:border-neutral-700 dark:hover:border-neutral-500',
+                      ? 'border-ink bg-ink text-ink-invert'
+                      : 'border-line hover:border-ink',
                     !available &&
-                      'cursor-not-allowed text-neutral-400 line-through hover:border-neutral-300 dark:text-neutral-600',
+                      'cursor-not-allowed text-ink-muted/50 line-through hover:border-line',
                   ]
                     .filter(Boolean)
                     .join(' ')}

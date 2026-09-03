@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { ProductPurchasePanel } from '@/components/product/ProductPurchasePanel';
+import { Prose } from '@/components/ui/Prose';
+import { Section } from '@/components/ui/Section';
 import { getProduct, getProductHandles, type Product } from '@/lib/shopify';
 
 export const revalidate = 900;
@@ -98,46 +100,46 @@ export default async function ProductPage({
   );
 
   return (
-    <div className="space-y-12">
+    <Section tone="bg" innerClassName="space-y-14">
       <ProductJsonLd product={product} />
 
-      <nav className="text-sm text-neutral-500">
-        <Link
-          href="/collections"
-          className="hover:text-neutral-900 dark:hover:text-neutral-100"
-        >
+      <nav className="text-[11px] tracking-[0.16em] text-ink-muted uppercase">
+        <Link href="/collections" className="transition-colors hover:text-ink">
           Collections
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-neutral-700 dark:text-neutral-300">
-          {product.title}
-        </span>
+        <span className="text-ink">{product.title}</span>
       </nav>
 
       <ProductPurchasePanel product={product} />
 
-      {product.descriptionHtml && (
-        <section className="max-w-2xl space-y-3">
-          <h2 className="text-lg font-medium">Details</h2>
-          <div
-            className="text-sm leading-relaxed text-neutral-600 [&_a]:underline [&_li]:ml-4 [&_li]:list-disc [&_ul]:space-y-1 dark:text-neutral-300"
-            dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-          />
-        </section>
-      )}
+      {(product.descriptionHtml || details.length > 0) && (
+        <div className="mx-auto max-w-2xl">
+          {product.descriptionHtml && (
+            <section className="space-y-3 border-b border-line pb-8">
+              <h2 className="text-xl">Details</h2>
+              <Prose html={product.descriptionHtml} />
+            </section>
+          )}
 
-      {details.length > 0 && (
-        <section className="max-w-2xl divide-y divide-neutral-200 border-y border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
           {details.map((section) => (
-            <div key={section.key} className="py-4">
-              <h3 className="text-sm font-medium">{section.label}</h3>
-              <p className="mt-1 text-sm whitespace-pre-line text-neutral-600 dark:text-neutral-300">
+            <details
+              key={section.key}
+              className="group border-b border-line py-4"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between text-sm tracking-[0.06em]">
+                {section.label}
+                <span className="text-ink-muted transition-transform group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="mt-3 text-sm whitespace-pre-line text-ink-muted">
                 {product.metafields[section.key]}
               </p>
-            </div>
+            </details>
           ))}
-        </section>
+        </div>
       )}
-    </div>
+    </Section>
   );
 }
