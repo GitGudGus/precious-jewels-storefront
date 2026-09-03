@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 
 import { Price } from '@/components/Price';
-import { formatPrice, type CartLine } from '@/lib/shopify';
+import { formatPrice } from '@/lib/shopify/format';
+import type { CartLine } from '@/lib/shopify/types';
 
 import { useCart } from './CartProvider';
 import { FreeShippingBar } from './FreeShippingBar';

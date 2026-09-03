@@ -1,4 +1,4 @@
-import { shopifyClient } from './client';
+import { getShopifyClient } from './client';
 
 /**
  * Run a Storefront API operation and return its `data`.
@@ -12,7 +12,7 @@ export async function storefront<T>(
   operation: string,
   variables?: Record<string, unknown>,
 ): Promise<T> {
-  const { data, errors } = await shopifyClient.request<T>(operation, {
+  const { data, errors } = await getShopifyClient().request<T>(operation, {
     variables,
   });
 

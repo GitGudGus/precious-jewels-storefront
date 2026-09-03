@@ -1,8 +1,6 @@
-import {
-  FREE_SHIPPING_THRESHOLD,
-  formatPrice,
-  type Money,
-} from '@/lib/shopify';
+import { FREE_SHIPPING_THRESHOLD } from '@/lib/shopify/constants';
+import { formatPrice } from '@/lib/shopify/format';
+import type { Money } from '@/lib/shopify/types';
 
 export function FreeShippingBar({ subtotal }: { subtotal: Money }) {
   const threshold = Number(FREE_SHIPPING_THRESHOLD.amount);
