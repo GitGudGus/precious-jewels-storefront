@@ -14,12 +14,22 @@ const NAV_HANDLES = [
   'hoops',
 ];
 
+/** Non-collection links that live in the nav alongside the categories. */
+const CONTENT_NAV = [
+  { href: '/journal', label: 'Journal' },
+  { href: '/pages/about-us', label: 'About' },
+];
+
 export async function Header() {
   const collections = await getCollections();
   const byHandle = new Map(collections.map((c) => [c.handle, c]));
-  const navItems = NAV_HANDLES.map((handle) => byHandle.get(handle))
-    .filter((c): c is NonNullable<typeof c> => c !== undefined)
-    .map((c) => ({ handle: c.handle, title: c.title }));
+  const navItems = [
+    ...NAV_HANDLES.map((handle) => byHandle.get(handle))
+      .filter((c): c is NonNullable<typeof c> => c !== undefined)
+      .map((c) => ({ href: `/collections/${c.handle}`, label: c.title })),
+    { href: '/collections', label: 'All' },
+    ...CONTENT_NAV,
+  ];
 
   return <HeaderBar navItems={navItems} />;
 }

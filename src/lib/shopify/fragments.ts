@@ -151,3 +151,41 @@ export const cartFragment = /* GraphQL */ `
     }
   }
 `;
+
+export const pageFragment = /* GraphQL */ `
+  fragment Page on Page {
+    handle
+    title
+    body
+    seo {
+      title
+      description
+    }
+  }
+`;
+
+export const articleListItemFragment = /* GraphQL */ `
+  fragment ArticleListItem on Article {
+    handle
+    title
+    excerpt
+    publishedAt
+    image {
+      ...Image
+    }
+  }
+`;
+
+export const articleFragment = /* GraphQL */ `
+  fragment Article on Article {
+    ...ArticleListItem
+    contentHtml
+    authorV2 {
+      name
+    }
+    seo {
+      title
+      description
+    }
+  }
+`;

@@ -7,7 +7,7 @@ import { CartButton } from '@/components/cart/CartButton';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/shopify/constants';
 import { formatPrice } from '@/lib/shopify/format';
 
-type NavItem = { handle: string; title: string };
+type NavItem = { href: string; label: string };
 
 const ANNOUNCEMENT = `♡ Free shipping on orders over ${formatPrice(FREE_SHIPPING_THRESHOLD)} ♡`;
 
@@ -49,34 +49,21 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
         <nav className="mx-auto hidden max-w-page items-center justify-center gap-8 px-6 pb-4 text-[11px] tracking-[0.18em] uppercase md:flex md:px-10">
           {navItems.map((item) => (
             <Link
-              key={item.handle}
-              href={`/collections/${item.handle}`}
+              key={item.href}
+              href={item.href}
               className="text-ink-muted transition-colors hover:text-ink"
             >
-              {item.title}
+              {item.label}
             </Link>
           ))}
-          <Link
-            href="/collections"
-            className="text-ink-muted transition-colors hover:text-ink"
-          >
-            All
-          </Link>
         </nav>
 
         <nav className="flex gap-5 overflow-x-auto border-t border-line px-6 py-2.5 text-[11px] tracking-[0.16em] whitespace-nowrap uppercase md:hidden">
           {navItems.map((item) => (
-            <Link
-              key={item.handle}
-              href={`/collections/${item.handle}`}
-              className="text-ink-muted"
-            >
-              {item.title}
+            <Link key={item.href} href={item.href} className="text-ink-muted">
+              {item.label}
             </Link>
           ))}
-          <Link href="/collections" className="text-ink-muted">
-            All
-          </Link>
         </nav>
       </div>
     </header>

@@ -5,9 +5,12 @@
  */
 
 import type {
+  Article,
+  ArticleListItem,
   Cart,
   CartLine,
   Collection,
+  Page,
   Money,
   Product,
   ProductListItem,
@@ -250,5 +253,55 @@ export function reshapeCart(cart: RawCart): Cart {
       totalAmount: reshapeMoney(cart.cost.totalAmount),
     },
     lines: flattenConnection(cart.lines).map(reshapeCartLine),
+  };
+}
+
+// --- Content -------------------------------------------------------------
+
+type RawSeo = { title: string | null; description: string | null };
+
+export type RawPage = {
+  handle: string;
+  title: string;
+  body: string;
+  seo: RawSeo;
+};
+
+export function reshapePage(page: RawPage): Page {
+  return {
+    handle: page.handle,
+    title: page.title,
+    bodyHtml: page.body,
+    seo: reshapeSeo(page.seo),
+  };
+}
+
+export type RawArticle = {
+  handle: string;
+  title: string;
+  excerpt: string | null;
+  publishedAt: string;
+  image: RawImage;
+  contentHtml?: string;
+  authorV2?: { name: string } | null;
+  seo?: RawSeo;
+};
+
+export function reshapeArticleListItem(article: RawArticle): ArticleListItem {
+  return {
+    handle: article.handle,
+    title: article.title,
+    excerpt: article.excerpt ?? '',
+    publishedAt: article.publishedAt,
+    image: reshapeImage(article.image),
+  };
+}
+
+export function reshapeArticle(article: RawArticle): Article {
+  return {
+    ...reshapeArticleListItem(article),
+    contentHtml: article.contentHtml ?? '',
+    authorName: article.authorV2?.name ?? null,
+    seo: reshapeSeo(article.seo ?? { title: null, description: null }),
   };
 }
