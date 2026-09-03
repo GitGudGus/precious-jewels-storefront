@@ -29,7 +29,9 @@ palette, full-bleed section bands. Tokens in `src/app/globals.css`, primitives i
 policy pages render from Shopify admin; `/journal` blog shell; `sitemap.xml`. Customer accounts
 (M3b) deferred post-launch.
 
-🚧 Next: Milestone 4 (search, merchandising) or Milestone 5 (launch prep).
+🚧 Milestone 5 (launch prep) — in progress. SEO (sitemap, robots, JSON-LD, canonicals), old-theme
+redirects, accessibility pass, analytics + error monitoring. Cutover runbook:
+[docs/launch-checklist.md](docs/launch-checklist.md).
 
 ## Stack
 
@@ -54,7 +56,10 @@ cp .env.example .env.local  # then fill in your Shopify tokens
 npm run dev                 # http://localhost:3000
 ```
 
-Never commit `.env.local`. `.env.example` holds the variable names with blank values.
+Never commit `.env.local`. `.env.example` documents every variable. Only the two
+`SHOPIFY_*` are required for local dev; the rest (`SHOPIFY_CHECKOUT_DOMAIN`, `NEXT_PUBLIC_SENTRY_DSN`,
+`SENTRY_*`) are launch-time and inert when blank — see
+[docs/launch-checklist.md](docs/launch-checklist.md).
 
 **Getting the Shopify values:** install the **Headless** channel from the Shopify App Store, click
 **Create storefront**, and copy the public Storefront access token it generates (no OAuth/custom

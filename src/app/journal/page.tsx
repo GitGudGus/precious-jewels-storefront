@@ -10,6 +10,7 @@ export const revalidate = 900;
 export const metadata: Metadata = {
   title: 'Journal',
   description: 'Notes on jewelry, care, and the Precious Jewels story.',
+  alternates: { canonical: '/journal' },
 };
 
 export default async function JournalPage() {

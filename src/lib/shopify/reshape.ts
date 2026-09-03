@@ -243,10 +243,31 @@ function reshapeCartLine(line: RawCartLine): CartLine {
   };
 }
 
+/**
+ * Fallback host override for `checkoutUrl`. Shopify issues checkout URLs on the
+ * shop's *primary* domain; the Milestone 5 cutover handles this by making
+ * `shop-precious-jewels.myshopify.com` the primary (see `docs/launch-checklist.md`
+ * §0), after which `checkoutUrl` is already correct and this stays a no-op.
+ * `SHOPIFY_CHECKOUT_DOMAIN` (env) is only there in case a specific host ever needs
+ * to be forced. Leave it unset. Server-only path.
+ */
+function normalizeCheckoutUrl(url: string): string {
+  const domain = process.env.SHOPIFY_CHECKOUT_DOMAIN;
+  if (!domain) return url;
+  try {
+    const parsed = new URL(url);
+    parsed.protocol = 'https:';
+    parsed.host = domain;
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 export function reshapeCart(cart: RawCart): Cart {
   return {
     id: cart.id,
-    checkoutUrl: cart.checkoutUrl,
+    checkoutUrl: normalizeCheckoutUrl(cart.checkoutUrl),
     totalQuantity: cart.totalQuantity,
     cost: {
       subtotalAmount: reshapeMoney(cart.cost.subtotalAmount),

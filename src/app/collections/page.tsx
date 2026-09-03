@@ -9,6 +9,7 @@ export const revalidate = 900;
 export const metadata: Metadata = {
   title: 'All collections',
   description: 'Browse every Precious Jewels collection.',
+  alternates: { canonical: '/collections' },
 };
 
 export default async function CollectionsPage() {

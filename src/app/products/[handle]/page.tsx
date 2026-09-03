@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { ProductPurchasePanel } from '@/components/product/ProductPurchasePanel';
+import { BreadcrumbJsonLd, JsonLd } from '@/components/seo/JsonLd';
 import { Prose } from '@/components/ui/Prose';
 import { Section } from '@/components/ui/Section';
 import { getProduct, getProductHandles, type Product } from '@/lib/shopify';
@@ -42,6 +43,7 @@ export async function generateMetadata({
   return {
     title: product.seo.title || product.title,
     description: description.slice(0, 160),
+    alternates: { canonical: `/products/${handle}` },
     openGraph: image
       ? {
           title: product.title,
@@ -61,29 +63,27 @@ export async function generateMetadata({
 
 function ProductJsonLd({ product }: { product: Product }) {
   const { minVariantPrice, maxVariantPrice } = product.priceRange;
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.title,
-    description: product.descriptionHtml
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim(),
-    image: product.images.map((image) => image.url),
-    offers: {
-      '@type': 'AggregateOffer',
-      priceCurrency: minVariantPrice.currencyCode,
-      lowPrice: minVariantPrice.amount,
-      highPrice: maxVariantPrice.amount,
-      availability: product.availableForSale
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-    },
-  };
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.title,
+        description: product.descriptionHtml
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim(),
+        image: product.images.map((image) => image.url),
+        offers: {
+          '@type': 'AggregateOffer',
+          priceCurrency: minVariantPrice.currencyCode,
+          lowPrice: minVariantPrice.amount,
+          highPrice: maxVariantPrice.amount,
+          availability: product.availableForSale
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+        },
+      }}
     />
   );
 }
@@ -102,8 +102,18 @@ export default async function ProductPage({
   return (
     <Section tone="bg" innerClassName="space-y-14">
       <ProductJsonLd product={product} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Home', path: '/' },
+          { name: 'Collections', path: '/collections' },
+          { name: product.title, path: `/products/${handle}` },
+        ]}
+      />
 
-      <nav className="text-[11px] tracking-[0.16em] text-ink-muted uppercase">
+      <nav
+        aria-label="Breadcrumb"
+        className="text-[11px] tracking-[0.16em] text-ink-muted uppercase"
+      >
         <Link href="/collections" className="transition-colors hover:text-ink">
           Collections
         </Link>

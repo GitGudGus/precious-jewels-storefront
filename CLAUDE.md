@@ -80,11 +80,43 @@ Shopify admin; we just render it — **no CMS**.
   Journal + About. `src/app/sitemap.ts` enumerates everything.
 
 **Milestone 3b (Customer accounts) — deferred, post-launch.** Customer Account API OAuth,
-`/account` with order history + addresses. Needs Shopify admin config (new customer accounts,
-client ID, callback URLs). Shopify's hosted account pages work meanwhile; not a launch blocker.
+`/account` with order history + addresses. Needs Shopify admin config. Shopify's hosted account
+pages work meanwhile; not a launch blocker. (Old `/account` deep links will 404 post-cutover —
+acceptable.)
 
-Next: M4 (search/filtering, merchandising, reviews) or M5 (launch prep — domain cutover, Sentry,
-analytics). M3b whenever the owner wants headless accounts.
+**Milestone 5 (Launch prep) — code done, cutover pending (operator).**
+
+- PR #11 `m5-launch-critical` (merged) — `src/app/robots.ts`; `src/components/seo/JsonLd.tsx`
+  (`Organization` in layout, `Breadcrumb` + `Product` on PDP/collection); `alternates.canonical` on
+  every route; `next.config` redirects (`/blogs/news*` → `/journal*`, nested collection-product
+  URLs, `/cart` → `/`, `/search` → `/collections`); a11y (skip link + `#main`, global
+  `:focus-visible` ring); `reshape.ts` `normalizeCheckoutUrl`.
+- PR `m5-monitoring` (open) — `@vercel/analytics` + `@vercel/speed-insights` in the layout;
+  `@sentry/nextjs` **env-gated** (`src/instrumentation.ts` + `src/sentry.{server,edge}.config.ts` +
+  `src/instrumentation-client.ts` + `src/app/global-error.tsx`; `next.config` only calls
+  `withSentryConfig` — imported from `@sentry/nextjs/config` in v10 — when `SENTRY_AUTH_TOKEN` is
+  set, so CI/local stay on the plain Turbopack-clean path); `docs/launch-checklist.md`.
+
+**⚠️ Checkout domain at cutover (verified 2026-09-03).** Shopify issues `cart.checkoutUrl` on the
+**primary domain**. Today primary = `preciousjewels.co` → checkout URLs on `preciousjewels.co`,
+which 404 the moment that domain points at Vercel. **Fix: at the cutover, set primary =
+`shop-precious-jewels.myshopify.com`** (Settings → Domains). Then `checkoutUrl` →
+`shop-precious-jewels.myshopify.com/cart/c/…` → 302 → Shopify's hosted checkout on `shop.app`
+(Shopify-owned, cutover-proof). **No code / no `SHOPIFY_CHECKOUT_DOMAIN` needed** — leave it blank;
+`normalizeCheckoutUrl` in `reshape.ts` is a fallback only. `preciousjewelsmia.com` (also connected)
+is the more-branded alternative primary. **Timing:** changing the primary 301s every connected
+domain to it immediately, so do it back-to-back with the DNS switch, never before — the owner
+tested this and reverted (the live store bounced to the raw myshopify URL). Never remove
+`shop-precious-jewels.myshopify.com` — it backs `SHOPIFY_STORE_DOMAIN`. Full runbook:
+`docs/launch-checklist.md`.
+
+Note: `preciousjewels.co` currently serves a **password-protected** Shopify store (dev mode) — not
+publicly live. "Remove password" is a cutover step.
+
+Next: merge `m5-monitoring`, then the owner works `docs/launch-checklist.md`. Then M4 (search) / M3b
+(accounts). Backlog: Instagram → journal feed (see `instagram-to-blog-idea` memory), real OG image
+
+- logo, contact form, newsletter wiring.
 
 Done:
 

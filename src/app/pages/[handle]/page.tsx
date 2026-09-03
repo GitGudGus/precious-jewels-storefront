@@ -39,6 +39,7 @@ export async function generateMetadata({
       page.seo.description ||
       plainText(page.bodyHtml).slice(0, 160) ||
       undefined,
+    alternates: { canonical: `/pages/${handle}` },
   };
 }
 
