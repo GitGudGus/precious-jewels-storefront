@@ -364,11 +364,17 @@ know if something breaks.
    - [ ] 404s and redirects verified with a crawl (Screaming Frog free tier)
    - [ ] Owner can still use Shopify POS at pop-ups (unaffected, but confirm)
 
-**Definition of done**
+**Code done** (in-repo): `sitemap.xml` + `robots.txt`, JSON-LD (`Product`/`Offer`/`BreadcrumbList`/
+`Organization`), canonical URLs, old-theme redirects, skip link + focus rings, per-page metadata,
+`SHOPIFY_CHECKOUT_DOMAIN` override, Vercel Analytics + Speed Insights, env-gated Sentry. Full
+operator runbook: [docs/launch-checklist.md](docs/launch-checklist.md).
 
-- [ ] `preciousjewels.co` serves the new storefront
+**Definition of done** (operator, at cutover)
+
+- [ ] `preciousjewels.co` serves the new storefront (DNS → Vercel; remove from Shopify domains;
+      set `SHOPIFY_CHECKOUT_DOMAIN` to the host checkout resolves to)
 - [ ] A real customer order completes and appears in Shopify with correct tax + shipping
-- [ ] Sentry is receiving events; you get an alert on a test error
+- [ ] Sentry is receiving events; you get an alert on a test error (add `NEXT_PUBLIC_SENTRY_DSN`)
 - [ ] Search Console shows the sitemap accepted, no coverage errors
 
 ---

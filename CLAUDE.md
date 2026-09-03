@@ -80,11 +80,31 @@ content in Shopify admin; we just render it — **no CMS**.
   Journal + About. `src/app/sitemap.ts` enumerates everything.
 
 **Milestone 3b (Customer accounts) — deferred, post-launch.** Customer Account API OAuth,
-`/account` with order history + addresses. Needs Shopify admin config (new customer accounts,
-client ID, callback URLs). Shopify's hosted account pages work meanwhile; not a launch blocker.
+`/account` with order history + addresses. Needs Shopify admin config. Shopify's hosted account
+pages work meanwhile; not a launch blocker. (Old `/account` deep links will 404 post-cutover —
+acceptable.)
 
-Next: M4 (search/filtering, merchandising, reviews) or M5 (launch prep — domain cutover, Sentry,
-analytics). M3b whenever the owner wants headless accounts.
+**Milestone 5 (Launch prep) — in progress.**
+
+- PR `m5-launch-critical` (open) — `src/app/robots.ts`; `src/components/seo/JsonLd.tsx`
+  (Organization in layout, Breadcrumb + Product on PDP/collection); `alternates.canonical` on
+  every route; `next.config` redirects (`/blogs/news*` → `/journal*`, nested collection-product
+  URLs, `/cart` → `/`, `/search` → `/collections`); a11y (skip link + `#main`, global
+  `:focus-visible` ring); `reshape.ts` `normalizeCheckoutUrl`.
+- PR `m5-monitoring` (next) — Vercel Analytics + Speed Insights, `@sentry/nextjs` (env-gated),
+  `docs/launch-checklist.md`.
+
+**⚠️ The checkout-domain problem (must be solved at cutover, not in code).** Shopify returns
+`cart.checkoutUrl` on the shop's **primary domain** (`preciousjewels.co/cart/c/…`). Rewriting the
+host to `*.myshopify.com` **does not work today** — Shopify 301s `*.myshopify.com/cart/c/*` back to
+the primary domain. So the moment `preciousjewels.co` DNS points at Vercel, checkout 404s unless
+Shopify is serving checkout from a different host. Fix path: at cutover the owner removes
+`preciousjewels.co` from Shopify's domains, checks what host checkout then resolves to, and sets
+`SHOPIFY_CHECKOUT_DOMAIN` (env, consumed by `normalizeCheckoutUrl`) in Vercel to that host. Leave
+the env var unset until then — Shopify's own URL works while it owns the apex. Full runbook:
+`docs/launch-checklist.md`.
+
+Next: finish M5 (PR `m5-monitoring` + the owner's cutover checklist), then M4 (search) / M3b.
 
 Done:
 
