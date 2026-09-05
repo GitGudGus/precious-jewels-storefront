@@ -18,8 +18,7 @@ export function OrganizationJsonLd() {
         '@type': 'Organization',
         name: 'Precious Jewels',
         url: SITE_URL,
-        // TODO(owner): replace with a real logo asset (see docs/launch-checklist.md).
-        logo: `${SITE_URL}/favicon.ico`,
+        logo: `${SITE_URL}/logo.png`,
         email: CONTACT_EMAIL,
         address: {
           '@type': 'PostalAddress',

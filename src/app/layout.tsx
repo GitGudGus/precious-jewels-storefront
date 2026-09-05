@@ -32,6 +32,19 @@ export const metadata: Metadata = {
   description:
     'Gold-filled, 18k gold, and silver jewelry from Miami. Tarnish resistant, hypoallergenic, nickel free.',
   alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Precious Jewels',
+    description:
+      'Gold-filled, 18k gold, and silver jewelry from Miami. Tarnish resistant, hypoallergenic, nickel free.',
+    siteName: 'Precious Jewels',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Precious Jewels',
+    description:
+      'Gold-filled, 18k gold, and silver jewelry from Miami. Tarnish resistant, hypoallergenic, nickel free.',
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
