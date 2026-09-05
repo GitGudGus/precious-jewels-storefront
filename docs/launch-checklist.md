@@ -79,7 +79,22 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       site's cream `--color-bg`. Also `public/logo.png` (transparent wordmark) wired into the
       `Organization` JSON-LD `logo` field, replacing the `favicon.ico` placeholder.
 - [ ] Lighthouse (mobile) ≥ 90 on the homepage, a collection page, and a PDP — run against the
-      Production deployment.
+      Production deployment. Verified locally (`next build` + `next start`) 2026-09-04/05, two real
+      bugs found and fixed:
+      - Homepage was 89 (LCP 3.5s, 2.79s of it "element render delay") — the hero's `<Reveal>`
+        scroll-fade wrapper was gating the H1's first paint behind JS hydration + an
+        IntersectionObserver callback + a 600ms transition, for content that's already in the
+        initial viewport and never actually needs to be "revealed". Removed `Reveal` from the hero
+        only (`src/app/page.tsx`); other sections keep it. → 99.
+      - PDP was 89 (LCP 3.7s) — `ProductGallery`'s main image used the deprecated `priority` prop
+        (Next.js 16 renamed it to `preload`; see `node_modules/next/dist/docs/.../image.md`), which
+        inserts a `<link rel=preload>` but — per that same doc — doesn't set `fetchpriority=high`.
+        Replaced with `loading="eager"` + `fetchPriority="high"` (the docs' own recommendation for
+        a genuine single LCP image) on `src/components/product/ProductGallery.tsx`. → 96.
+      - Collection page: 93, no changes needed.
+      Still needs: **re-run against the actual Production URL** (not just local) once merged —
+      local `next start` skips Vercel's edge (CDN, `/_vercel/*` scripts), so numbers may shift
+      slightly either direction.
 - [ ] `axe` DevTools clean on the same three pages; one pass with VoiceOver.
 
 ### Monitoring
