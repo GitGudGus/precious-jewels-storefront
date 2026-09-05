@@ -147,7 +147,7 @@ Headless-channel token flow, GraphQL basics, connecting a repo to a host, what C
 **Definition of done**
 
 - [x] `npm run dev` shows the live Shopify shop name pulled from the API
-- [x] The same page is live on a `*.vercel.app` URL (`precious-jewels.vercel.app`)
+- [x] The same page is live on a `*.vercel.app` URL (`precious-jewels-phi.vercel.app`)
 - [x] Opening a PR runs lint + typecheck + build automatically
 - [x] `main` can't be pushed to directly (GitHub ruleset "main protection", active; repo made
       public to unlock rulesets on the free plan); no secrets are in git history (verified — `.env.local`
