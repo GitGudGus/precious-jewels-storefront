@@ -45,7 +45,8 @@ export function ProductGallery({
           src={active.url}
           alt={active.altText ?? title}
           fill
-          priority
+          loading="eager"
+          fetchPriority="high"
           sizes={MAIN_SIZES}
           className={`object-cover transition-transform duration-300 ${
             zoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
