@@ -64,14 +64,20 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 
 ### SEO / content
 
-- [ ] Crawl the **live** `preciousjewels.co` (Screaming Frog free tier, 500 URLs) → export all
-      indexed URLs. For anything not covered by `next.config.ts` redirects, add a redirect.
-      Known-covered: products, collections, pages, policies; `/blogs/news*` → `/journal*`;
-      `/cart`, `/search`. Watch for: old blog/article handles, discontinued product handles,
-      `/products/…?variant=` links, `/apps/*`.
-- [ ] A real 1200×630 **OG share image** created and added (`src/app/opengraph-image.png` +
-      reference it in `layout.tsx` `metadata.openGraph.images`). Also a proper logo for the
-      `Organization` JSON-LD (currently points at `favicon.ico`).
+- [ ] ~~Crawl the live `preciousjewels.co` pre-launch~~ — **deferred to post-launch** (decision
+      2026-09-04): the site is password-protected again, so a real crawl needs either a brief
+      deliberate password removal or an already-verified Search Console property, neither in place
+      right now. Known-common cases are already covered in `next.config.ts` (products, collections,
+      pages, policies; `/blogs/news*` → `/journal*`; `/cart`, `/search`), so the risk of deferring
+      is narrow: long-tail URLs (old blog/article handles, discontinued product handles,
+      `/products/…?variant=` links, `/apps/*`) may 404 briefly post-launch until caught by Search
+      Console Coverage (§5) and patched.
+- [x] A real 1200×630 **OG share image** created and added (`src/app/opengraph-image.png`, picked
+      up automatically by Next's file convention; `layout.tsx` also carries explicit
+      `openGraph`/`twitter` title+description). Built from the brand wordmark (source:
+      `preciousjewelsmia` Instagram profile pic / user-provided screenshot) composited onto the
+      site's cream `--color-bg`. Also `public/logo.png` (transparent wordmark) wired into the
+      `Organization` JSON-LD `logo` field, replacing the `favicon.ico` placeholder.
 - [ ] Lighthouse (mobile) ≥ 90 on the homepage, a collection page, and a PDP — run against the
       Production deployment.
 - [ ] `axe` DevTools clean on the same three pages; one pass with VoiceOver.

@@ -152,11 +152,13 @@ Done:
   similar, e.g. Vercel env vars if done via API/CLI rather than their dashboard)
 - CI confirmed green on `main` end to end (lint, typegen, typecheck, build all pass against the
   real Shopify secrets)
-- **Vercel project `precious-jewels` created** (imported from GitHub), both env vars
-  (`SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`) set for Production + Preview via the
-  dashboard, deployed green — homepage live at `precious-jewels.vercel.app` rendering the shop
-  name. First deploy failed with `Shopify Storefront API error: GraphQL Client: fetch failed`
-  during static prerender of `/`; root cause was the Vercel env var value, fixed by re-entering it
+- **Vercel project created** (imported from GitHub; project renamed at some point after creation —
+  current production URL is `precious-jewels-phi.vercel.app`, confirmed 2026-09-04; do not trust
+  older `precious-jewels.vercel.app` references, that domain belongs to an unrelated store), both
+  env vars (`SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`) set for Production + Preview
+  via the dashboard, deployed green — homepage live rendering the shop name. First deploy failed
+  with `Shopify Storefront API error: GraphQL Client: fetch failed` during static prerender of `/`;
+  root cause was the Vercel env var value, fixed by re-entering it
   cleanly (see gotcha below).
 
 - **Repo made public** (`gh repo edit --visibility public`) — GitHub branch protection _and_
