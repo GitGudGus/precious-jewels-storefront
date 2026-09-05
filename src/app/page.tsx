@@ -57,7 +57,10 @@ export default async function Home() {
         tone="bg"
         innerClassName="flex flex-col items-center gap-6 py-24 text-center md:py-32"
       >
-        <Reveal className="flex flex-col items-center gap-6">
+        {/* No <Reveal> here on purpose — this is the first thing on the page
+            (already in view on load), so a scroll-triggered fade only adds
+            JS-hydration-gated delay to the LCP text with no UX payoff. */}
+        <div className="flex flex-col items-center gap-6">
           <p className="text-[11px] tracking-[0.25em] text-ink-muted uppercase">
             Precious Jewels · Miami
           </p>
@@ -71,7 +74,7 @@ export default async function Home() {
           <ButtonLink href="/collections" className="mt-2">
             Shop the collection
           </ButtonLink>
-        </Reveal>
+        </div>
       </Section>
 
       <Section tone="surface" innerClassName="py-14">
