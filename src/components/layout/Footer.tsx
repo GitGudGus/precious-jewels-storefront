@@ -21,6 +21,7 @@ const COLUMNS = [
   {
     heading: 'Help',
     links: [
+      { href: '/account', label: 'Account & orders' },
       { href: '/pages/faqs', label: 'FAQ' },
       { href: '/policies/shipping-policy', label: 'Shipping' },
       { href: '/policies/refund-policy', label: 'Returns' },
