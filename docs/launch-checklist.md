@@ -38,28 +38,41 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 
 ### Shopify admin
 
-- [ ] Bogus Gateway disabled / real payment provider live; Klarna & Afterpay enabled and
-      **visible at checkout** (verify by checking out on the Vercel preview).
-- [ ] All **test orders deleted**; inventory counts correct; nothing accidentally set to "continue
-      selling when out of stock" that shouldn't be.
-- [ ] Terms of Service and Shipping Policy have real text (Settings → Policies) — the
-      `/policies/*` pages render whatever's there.
-- [ ] Order confirmation + shipping-notification emails reviewed (Settings → Notifications) — logo,
-      from-address, links point at `preciousjewels.co`.
-- [ ] Tax: Settings → Taxes — Florida nexus set; spot-check tax on a FL address vs an out-of-state
-      address at checkout.
+- [~] Bogus Gateway disabled / real payment provider live; Klarna & Afterpay enabled and
+      **visible at checkout** (verify by checking out on the Vercel preview). — 2026-09-04:
+      Shopify Payments + Afterpay confirmed live in Settings → Payments. Still open: confirm
+      **Klarna** (enable it, or decide it's not wanted) and eyeball the payment options actually
+      showing on the Vercel-preview checkout.
+- [x] All **test orders deleted**; inventory counts correct; nothing accidentally set to "continue
+      selling when out of stock" that shouldn't be. — 2026-09-04: no test orders (this was a real
+      operating store before, only real order history); overselling is disabled.
+- [~] Terms of Service and Shipping Policy have real text (Settings → Policies) — the
+      `/policies/*` pages render whatever's there. — 2026-09-04: policy bodies already written; the
+      Policies tab's **Contact information** and **Legal notice** fields were the only gaps —
+      values handed to the owner (`preciousjewelsmia@gmail.com`; `Precious Jewels`, `1768 NW 20th
+      Street, Miami, FL 33142`). Confirm they've been pasted in.
+- [x] Order confirmation + shipping-notification emails reviewed (Settings → Notifications) — logo,
+      from-address, links point at `preciousjewels.co`. — 2026-09-04: owner confirmed correct.
+- [x] Tax: Settings → Taxes — Florida nexus set; spot-check tax on a FL address vs an out-of-state
+      address at checkout. — 2026-09-04: owner confirmed "tax looks good."
 - [ ] Store password removed (Online Store → Preferences) — do this at cutover, not before.
-- [ ] Decide the checkout primary domain (§0): `shop-precious-jewels.myshopify.com` (simple) or
-      `preciousjewelsmia.com` (branded). **Don't change it yet** — that's a §2 step.
+      (2026-09-04: briefly removed by accident while checking Payments — exposed the *old* Shopify
+      theme, since DNS still points at Shopify; re-enabled within minutes. Confirms the old theme
+      is still the published Online Store, and that removing the password early makes it publicly
+      orderable. Keep it on until the §2 window.)
+- [x] Decide the checkout primary domain (§0): `shop-precious-jewels.myshopify.com` (simple) or
+      `preciousjewelsmia.com` (branded). **Don't change it yet** — that's a §2 step. — going with
+      `shop-precious-jewels.myshopify.com`.
 - [ ] Confirm the owner can still take payments in **Shopify POS** at pop-ups (unaffected by
       headless, but confirm before launch day).
 
 ### Vercel
 
-- [ ] Production env vars present: `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`,
+- [x] Production env vars present: `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`,
       and (optional) `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`. `SHOPIFY_CHECKOUT_DOMAIN` stays
-      **blank** for the `.myshopify.com` option.
-- [ ] Latest `main` deployed green to Production.
+      **blank** for the `.myshopify.com` option. — 2026-09-04: both Shopify vars present; both
+      Sentry vars added this session; `SHOPIFY_CHECKOUT_DOMAIN` left blank.
+- [x] Latest `main` deployed green to Production. — 2026-09-04.
 - [ ] Vercel Analytics + Speed Insights showing data on the current preview URL.
 
 ### SEO / content
@@ -78,6 +91,11 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       `preciousjewelsmia` Instagram profile pic / user-provided screenshot) composited onto the
       site's cream `--color-bg`. Also `public/logo.png` (transparent wordmark) wired into the
       `Organization` JSON-LD `logo` field, replacing the `favicon.ico` placeholder.
+- [x] **Customer accounts (hosted) wired for launch** — 2026-09-09. Store is on Shopify's new
+      passwordless accounts; "Account" links (header + footer) point at `/account`, which
+      `next.config.ts` redirects to the hosted portal. Old theme deep links (`/account/orders`
+      etc.) covered too. Native Moonstone `/account` stays deferred to M3b. Verify the redirect
+      chain live in §3.
 - [ ] Lighthouse (mobile) ≥ 90 on the homepage, a collection page, and a PDP — run against the
       Production deployment. Verified locally (`next build` + `next start`) 2026-09-04/05, two real
       bugs found and fixed:
@@ -99,10 +117,16 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 
 ### Monitoring
 
-- [ ] Sentry project created; `NEXT_PUBLIC_SENTRY_DSN` (+ `SENTRY_AUTH_TOKEN` for readable stack
-      traces) in Vercel; trigger a test error and confirm it lands in Sentry with an alert.
+- [x] Sentry project created; `NEXT_PUBLIC_SENTRY_DSN` (+ `SENTRY_AUTH_TOKEN` for readable stack
+      traces) in Vercel; trigger a test error and confirm it lands in Sentry with an alert. —
+      2026-09-04: Sentry project + org auth token created, both env vars in Vercel (Production +
+      Preview), verified end-to-end with a temporary `/sentry-test` throw route on a preview
+      deploy — error landed in Sentry as unhandled; route deleted after.
 - [ ] UptimeRobot (free) monitors on `https://preciousjewels.co/` and one PDP — 5-min interval,
-      alert to the owner's email/SMS.
+      alert to the owner's email/SMS. (2026-09-04: deferred within this session; Production on
+      Vercel is *not* behind deployment protection — only Preview deploys are — so monitoring
+      `precious-jewels-phi.vercel.app` now and swapping the URLs to `preciousjewels.co` at cutover
+      works fine. Just not set up yet.)
 
 ---
 
@@ -128,6 +152,9 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 - [ ] Confirmation email received and looks right.
 - [ ] `https://preciousjewels.co/robots.txt` and `/sitemap.xml` load and reference the real domain.
 - [ ] A few old URLs 301/308 correctly (`/blogs/news`, a known old blog post, `/cart`).
+- [ ] `https://preciousjewels.co/account` → Shopify's hosted customer account portal (307 →
+      `<myshopify>/account` → the portal). "Account" link in the header + footer works. Log in with
+      a test customer, confirm order history + addresses show.
 - [ ] Sentry shows nothing alarming from real traffic.
 - [ ] Submit `https://preciousjewels.co/sitemap.xml` in **Google Search Console** (add the property
       first if needed); request indexing for the homepage.
