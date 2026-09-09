@@ -79,10 +79,22 @@ Shopify admin; we just render it — **no CMS**.
 - `Footer` rebuilt (Shop / Company / Help columns + Privacy/Terms bottom bar); header nav gained
   Journal + About. `src/app/sitemap.ts` enumerates everything.
 
-**Milestone 3b (Customer accounts) — deferred, post-launch.** Customer Account API OAuth,
-`/account` with order history + addresses. Needs Shopify admin config. Shopify's hosted account
-pages work meanwhile; not a launch blocker. (Old `/account` deep links will 404 post-cutover —
-acceptable.)
+**Milestone 3b (Customer accounts).** Split into two:
+
+- **Hosted accounts for launch — done (PR pending).** The store is already on Shopify's **new
+  (passwordless) customer accounts** — `<myshopify>/account` 302s to the hosted portal at
+  `https://shopify.com/24343216164/account` (shop id `24343216164`). So for launch we just link
+  to it: "Account" in the header (text top-right on desktop, person icon top-left on mobile — the
+  left grid cell must stay a present grid item or the 3-col header un-centres) + "Account & orders"
+  in the footer Help column, both pointing at `/account`; `next.config.ts` redirects `/account`
+  and `/account/:path*` (old theme deep links like `/account/orders`) →
+  `https://shop-precious-jewels.myshopify.com/account` (`basePath: false`, `permanent: false` — we
+  intend to reclaim `/account` for a native page). Customers get login, order history + tracking,
+  profile, addresses, and email opt-out — all real, just Shopify-branded pages. **This supersedes
+  the old "old `/account` links will 404 — acceptable" note.**
+- **Native `/account` — deferred, post-launch.** Customer Account API OAuth (PKCE), custom
+  Moonstone-styled `/account` (profile, order history, order detail, addresses). Real project;
+  when built, drop the `next.config` redirect and the links keep working unchanged.
 
 **Milestone 5 (Launch prep) — all code merged (#11, #12, #13). Cutover pending (operator).**
 
