@@ -32,7 +32,30 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
             scrolled ? 'py-3' : 'py-5'
           }`}
         >
-          <span />
+          {/* Left cell: account icon on mobile (balances the cart on the right);
+              on desktop the account link rides the right cluster as text, and
+              this cell stays present-but-empty so the 3-col grid keeps the
+              wordmark centred. */}
+          <div className="flex items-center">
+            <Link
+              href="/account"
+              aria-label="Account"
+              className="text-ink transition-opacity hover:opacity-70 md:hidden"
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+                aria-hidden="true"
+              >
+                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+                <path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" />
+              </svg>
+            </Link>
+          </div>
           <Link
             href="/"
             className={`text-center font-serif tracking-[0.14em] whitespace-nowrap uppercase transition-all ${
@@ -41,7 +64,13 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
           >
             Precious Jewels
           </Link>
-          <div className="flex justify-end">
+          <div className="flex items-center justify-end gap-5">
+            <Link
+              href="/account"
+              className="hidden text-[11px] tracking-[0.16em] text-ink-muted uppercase transition-colors hover:text-ink md:inline"
+            >
+              Account
+            </Link>
             <CartButton />
           </div>
         </div>

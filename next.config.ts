@@ -33,6 +33,25 @@ const nextConfig: NextConfig = {
       { source: '/cart', destination: '/', permanent: false },
       // Real search is Milestone 4.
       { source: '/search', destination: '/collections', permanent: false },
+      // Customer accounts are Shopify-hosted (new/passwordless accounts). The
+      // storefront has no native /account yet — that's Milestone 3b — so send
+      // /account and any old theme deep link (/account/orders, /account/addresses)
+      // to the hosted portal. `<myshopify>/account` 302s to the real portal at
+      // shopify.com/<shop-id>/account and stays valid across the M5 cutover.
+      // `permanent: false` on purpose — we intend to reclaim /account for a
+      // native, Moonstone-styled page later.
+      {
+        source: '/account',
+        destination: 'https://shop-precious-jewels.myshopify.com/account',
+        basePath: false,
+        permanent: false,
+      },
+      {
+        source: '/account/:path*',
+        destination: 'https://shop-precious-jewels.myshopify.com/account',
+        basePath: false,
+        permanent: false,
+      },
     ];
   },
 };
