@@ -14,11 +14,11 @@ const NAV_HANDLES = [
   'hoops',
 ];
 
-/** Non-collection links that live in the nav alongside the categories. */
-const CONTENT_NAV = [
-  { href: '/journal', label: 'Journal' },
-  { href: '/pages/about-us', label: 'About' },
-];
+/**
+ * Non-collection links that live in the nav alongside the categories. About
+ * lives in the footer only (owner's call) — keep it out of here.
+ */
+const CONTENT_NAV = [{ href: '/journal', label: 'Journal' }];
 
 export async function Header() {
   const collections = await getCollections();
