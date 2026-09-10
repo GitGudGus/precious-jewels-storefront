@@ -114,7 +114,10 @@ export default async function ProductPage({
         aria-label="Breadcrumb"
         className="text-[11px] tracking-[0.16em] text-ink-muted uppercase"
       >
-        <Link href="/collections" className="transition-colors hover:text-ink">
+        <Link
+          href="/collections"
+          className="transition-colors hover:text-accent-deep"
+        >
           Collections
         </Link>
         <span className="mx-2">/</span>
