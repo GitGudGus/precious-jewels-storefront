@@ -53,7 +53,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block text-ink-muted transition-colors hover:text-ink"
+                  className="block text-ink-muted transition-colors hover:text-accent-deep"
                 >
                   {link.label}
                 </Link>
@@ -67,13 +67,13 @@ export function Footer() {
           <nav className="flex gap-4">
             <Link
               href="/policies/privacy-policy"
-              className="transition-colors hover:text-ink"
+              className="transition-colors hover:text-accent-deep"
             >
               Privacy
             </Link>
             <Link
               href="/policies/terms-of-service"
-              className="transition-colors hover:text-ink"
+              className="transition-colors hover:text-accent-deep"
             >
               Terms
             </Link>

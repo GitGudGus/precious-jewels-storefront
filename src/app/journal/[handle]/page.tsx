@@ -67,7 +67,7 @@ export default async function ArticlePage({
         <p className="pt-4 text-center">
           <Link
             href="/journal"
-            className="text-[11px] tracking-[0.16em] text-ink-muted uppercase transition-colors hover:text-ink"
+            className="text-[11px] tracking-[0.16em] text-ink-muted uppercase transition-colors hover:text-accent-deep"
           >
             ← All entries
           </Link>

@@ -97,7 +97,7 @@ export function CartDrawer() {
             type="button"
             onClick={closeDrawer}
             aria-label="Close cart"
-            className="text-ink-muted transition-colors hover:text-ink"
+            className="text-ink-muted transition-colors hover:text-accent-deep"
           >
             ✕
           </button>
@@ -117,7 +117,7 @@ export function CartDrawer() {
             <Link
               href="/collections"
               onClick={closeDrawer}
-              className="border border-ink px-6 py-2.5 text-xs tracking-[0.15em] uppercase transition-colors hover:bg-ink hover:text-ink-invert"
+              className="border border-accent-deep px-6 py-2.5 text-xs tracking-[0.15em] text-accent-deep uppercase transition-colors hover:bg-accent-deep hover:text-ink-invert"
             >
               Continue shopping
             </Link>
@@ -186,7 +186,7 @@ export function CartDrawer() {
                           type="button"
                           onClick={() => removeItem(line.id)}
                           disabled={isPending}
-                          className="text-xs text-ink-muted underline transition-colors hover:text-ink disabled:opacity-40"
+                          className="text-xs text-ink-muted underline transition-colors hover:text-accent-deep disabled:opacity-40"
                         >
                           Remove
                         </button>
@@ -208,7 +208,7 @@ export function CartDrawer() {
               </p>
               <a
                 href={cart?.checkoutUrl}
-                className="block w-full bg-ink px-6 py-3.5 text-center text-xs tracking-[0.15em] text-ink-invert uppercase transition-colors hover:bg-ink/85"
+                className="block w-full bg-accent-deep px-6 py-3.5 text-center text-xs tracking-[0.15em] text-ink-invert uppercase transition-colors hover:bg-accent-deep/85"
               >
                 Checkout
               </a>

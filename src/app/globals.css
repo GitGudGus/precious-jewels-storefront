@@ -8,10 +8,17 @@
   --color-bg: #fffdf8; /* warm cream — the page */
   --color-surface: #f5efe5; /* sand — cards, alternating bands */
   --color-blush: #fff6f9; /* rare accent band */
-  --color-ink: #000000; /* text, buttons, hairlines */
+  --color-ink: #000000; /* text, structural bands, hairlines */
   --color-ink-muted: #5c574e; /* secondary text */
   --color-ink-invert: #fffdf8; /* text/labels on ink */
   --color-line: rgba(0, 0, 0, 0.12); /* hairline borders */
+
+  /* Guava — the signature accent. `accent` (bright) is for decorative fills
+   * only (it's ~3.5:1 on cream — fails AA for text); `accent-deep` is AA on
+   * cream and carries every CTA, link, and focus ring. */
+  --color-accent: #d5674a;
+  --color-accent-deep: #b1462c;
+  --color-accent-tint: #f7e3da;
 
   --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-ovo), Georgia, 'Times New Roman', serif;
@@ -58,7 +65,7 @@
 
   /* Visible keyboard focus on every interactive element. */
   :focus-visible {
-    outline: 2px solid var(--color-ink);
+    outline: 2px solid var(--color-accent-deep);
     outline-offset: 2px;
   }
 

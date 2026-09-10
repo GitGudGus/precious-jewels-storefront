@@ -67,7 +67,7 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
           <div className="flex items-center justify-end gap-5">
             <Link
               href="/account"
-              className="hidden text-[11px] tracking-[0.16em] text-ink-muted uppercase transition-colors hover:text-ink md:inline"
+              className="hidden text-[11px] tracking-[0.16em] text-ink-muted uppercase transition-colors hover:text-accent-deep md:inline"
             >
               Account
             </Link>
@@ -80,7 +80,7 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
             <Link
               key={item.href}
               href={item.href}
-              className="text-ink-muted transition-colors hover:text-ink"
+              className="text-ink-muted transition-colors hover:text-accent-deep"
             >
               {item.label}
             </Link>

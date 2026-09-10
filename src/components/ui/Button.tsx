@@ -5,8 +5,9 @@ const BASE =
   'inline-flex items-center justify-center px-8 py-3.5 text-xs uppercase tracking-[0.15em] transition-colors disabled:cursor-not-allowed disabled:opacity-50';
 
 const VARIANTS = {
-  primary: 'bg-ink text-ink-invert hover:bg-ink/85',
-  outline: 'border border-ink text-ink hover:bg-ink hover:text-ink-invert',
+  primary: 'bg-accent-deep text-ink-invert hover:bg-accent-deep/85',
+  outline:
+    'border border-accent-deep text-accent-deep hover:bg-accent-deep hover:text-ink-invert',
 } as const;
 
 type Variant = keyof typeof VARIANTS;

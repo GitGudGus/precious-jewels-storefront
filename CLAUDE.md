@@ -64,6 +64,25 @@ Deferred (user tasks): M1 Lighthouse ≥ 90 on a PDP; M1 `custom.*` metafields; 
 test order. Redesign follow-ups if wanted: real hero photography, a proper mobile nav drawer,
 sticky add-to-cart on mobile PDP, newsletter wiring.
 
+**Guava refresh (2026-09-10).** The owner found the storefront "boring and bland." After a
+3-option direction study (published as a Claude artifact — Molten Gold / Guava / Garnet), she
+picked **Guava**: a warm Miami-coral signature accent, on the same Moonstone bones (Ovo/Jost,
+cream, sharp corners). NOT a redirection. See the `guava-accent-direction` memory for hexes +
+rationale. Split into two:
+
+- **Accent pass — PR `guava-accent`.** `globals.css` gained `--color-accent` `#d5674a` (bright,
+  decorative fills only — ~3.5:1 on cream, fails AA for text) + `--color-accent-deep` `#b1462c`
+  (AA on cream, carries every CTA / link / the focus ring) + `--color-accent-tint` `#f7e3da`.
+  Applied: `Button` both variants, cart checkout + "continue shopping" + `FreeShippingBar` fill,
+  `VariantSelector` selected pill, `ProductCard` name on hover, header/footer/breadcrumb link
+  hovers, the global `:focus-visible` ring. Structural black stays black: the announcement bar,
+  `Section` `tone="ink"` bands, the skip link, the cart-count badge.
+- **Hero + rhythm — NOT STARTED, needs photography.** Split hero (big Ovo type beside a real
+  image + coral CTA), section-rhythm variation, an `@preciousjewelsmia` photo wall, editorial
+  sections. Blocked on the owner sending real photos (camera roll / photographer files — NOT
+  Instagram: its public pages are JS shells now, scraping is dead, and IG copies are low-res).
+  Post-launch.
+
 **Milestone 3a (Content & legal pages) — merged.** The owner already authored this content in
 Shopify admin; we just render it — **no CMS**.
 
