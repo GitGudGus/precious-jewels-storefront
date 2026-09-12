@@ -31,7 +31,7 @@ export function FreeShippingBar({ subtotal }: { subtotal: Money }) {
       </p>
       <div className="h-0.5 w-full bg-line">
         <div
-          className="h-full bg-ink transition-all duration-300"
+          className="h-full bg-accent transition-all duration-300"
           style={{ width: `${percent}%` }}
         />
       </div>

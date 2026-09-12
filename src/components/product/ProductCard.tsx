@@ -32,7 +32,9 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         )}
       </div>
       <div className="mt-3 space-y-1">
-        <h3 className="text-sm text-ink">{product.title}</h3>
+        <h3 className="text-sm text-ink transition-colors group-hover:text-accent-deep">
+          {product.title}
+        </h3>
         <Price
           min={minVariantPrice}
           max={

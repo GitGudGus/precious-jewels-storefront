@@ -59,8 +59,8 @@ export function VariantSelector({
                   className={[
                     'rounded-pill border px-5 py-2 text-sm transition-colors',
                     isSelected
-                      ? 'border-ink bg-ink text-ink-invert'
-                      : 'border-line hover:border-ink',
+                      ? 'border-accent-deep bg-accent-deep text-ink-invert'
+                      : 'border-line hover:border-accent-deep',
                     !available &&
                       'cursor-not-allowed text-ink-muted/50 line-through hover:border-line',
                   ]
