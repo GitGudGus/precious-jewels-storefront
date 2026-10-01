@@ -83,6 +83,29 @@ rationale. Split into two:
   Instagram: its public pages are JS shells now, scraping is dead, and IG copies are low-res).
   Post-launch.
 
+**Guava refresh (post-launch visual pass) — in progress (as of 2026-10-01).** Direction + tokens:
+see the `guava-accent-direction` memory.
+
+- Part 1, accent pass — **merged (#18, 2026-10-01).**
+- Part 2, homepage photography — branch `guava-hero`: split hero (`bg-accent-tint` text half +
+  on-model hoop portrait, `loading="eager"` + `fetchPriority="high"`) and a two-tile editorial band
+  (hoops → `/collections/hoops`, silver evil-eye bracelets → `/collections/bracelets`) between New
+  arrivals and Shop by category. Images are static imports from `src/assets/home/` (web-sized JPEG
+  exports; `next/image` gives blur placeholders for free). Originals live in `product_pictures/`
+  (gitignored — HEIC + multi-MB files).
+- **Photography ground rules (owner, 2026-10-01):** the owner owns all product photos and grants
+  full use on the site; on-model shots are mostly AI-generated from real product photos. Only use
+  AI shots whose jewelry matches a real SKU — the two 6-up "evil eye" contact sheets in
+  `product_pictures/` were skipped (cells are ~555px, and they show blue evil-eye
+  necklaces/rings/anklets/earrings that aren't in the catalog). Photo wall still needs individual
+  full-res files.
+
+**Launch plan (owner, 2026-10-01): the site goes live with every product sold out.** No sales at
+launch — the site runs ~a month collecting analytics, then a **live drop in late November 2026**.
+Implications: the sold-out state is the main customer experience at launch (cards, PDP, cart), and
+capturing interest for the drop (the newsletter band is still visual-only) matters more than
+checkout polish until then.
+
 **Milestone 3a (Content & legal pages) — merged.** The owner already authored this content in
 Shopify admin; we just render it — **no CMS**.
 
