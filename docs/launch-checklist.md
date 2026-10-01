@@ -42,15 +42,21 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       **visible at checkout** (verify by checking out on the Vercel preview). — 2026-09-04:
       Shopify Payments + Afterpay confirmed live in Settings → Payments. Still open: confirm
       **Klarna** (enable it, or decide it's not wanted) and eyeball the payment options actually
-      showing on the Vercel-preview checkout.
+      showing on the Vercel-preview checkout. — 2026-10-01: owner believes Klarna is enabled.
+      Checkout can't be reached while `DROP_PENDING` blocks add-to-cart, so eyeball the payment
+      options during the drop-day real-card test.
 - [x] All **test orders deleted**; inventory counts correct; nothing accidentally set to "continue
       selling when out of stock" that shouldn't be. — 2026-09-04: no test orders (this was a real
       operating store before, only real order history); overselling is disabled.
-- [~] Terms of Service and Shipping Policy have real text (Settings → Policies) — the
+- [x] Terms of Service and Shipping Policy have real text (Settings → Policies) — the
       `/policies/*` pages render whatever's there. — 2026-09-04: policy bodies already written; the
       Policies tab's **Contact information** and **Legal notice** fields were the only gaps —
       values handed to the owner (`preciousjewelsmia@gmail.com`; `Precious Jewels`, `1768 NW 20th
-      Street, Miami, FL 33142`). Confirm they've been pasted in.
+      Street, Miami, FL 33142`). — 2026-10-01: owner confirmed policies are up to date.
+- [x] Newsletter signup creates a **Subscribed** customer in Shopify admin. — 2026-10-01: owner
+      tested a real signup on the preview; works.
+- [x] Launch catalogue curated: 34 teaser products on the **Headless** channel only (removed from
+      every other sales channel), all showing "Coming soon" via `DROP_PENDING`. — 2026-10-01.
 - [x] Order confirmation + shipping-notification emails reviewed (Settings → Notifications) — logo,
       from-address, links point at `preciousjewels.co`. — 2026-09-04: owner confirmed correct.
 - [ ] **Checkout branding → Guava.** Settings → Checkout → Customize (checkout editor). Set the
@@ -115,9 +121,18 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
         Replaced with `loading="eager"` + `fetchPriority="high"` (the docs' own recommendation for
         a genuine single LCP image) on `src/components/product/ProductGallery.tsx`. → 96.
       - Collection page: 93, no changes needed.
-      Still needs: **re-run against the actual Production URL** (not just local) once merged —
-      local `next start` skips Vercel's edge (CDN, `/_vercel/*` scripts), so numbers may shift
-      slightly either direction.
+      **Re-run 2026-10-01** after the photo hero / pre-drop work (mobile, simulated throttling):
+      - Production URL, before fixes: homepage 81, collection 84, PDP 86; accessibility 91–96.
+      - Fixed: first row of collection cards now `loading="eager"` (the LCP card image was lazy —
+        1.2s of load delay); cart drawer gets `inert` while closed (focusable content inside
+        `aria-hidden`); `/account` links `prefetch={false}` (the off-site redirect logged a CORS
+        console error on every page); accent tint lightened to `#f9e8e0` (outline button was
+        4.48:1); heading order (value props → `h2`, sr-only `h2` above the collection grid).
+      - Local `next start`, after fixes: homepage 90 (85 on a cold image cache), collection 95,
+        PDP 90; **accessibility 100** on all three; SEO 100. The homepage LCP is now the hero
+        photo (it was the H1 text), simulated at 3.6s — observed LCP is under a second; the
+        simulated figure is hydration JS on a 4×-throttled CPU delaying the image paint.
+      Still needs: one more run against the Production URL once these fixes are deployed.
 - [ ] `axe` DevTools clean on the same three pages; one pass with VoiceOver.
 
 ### Monitoring
@@ -161,7 +176,9 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 - [ ] `https://preciousjewels.co/` loads the new storefront (hard refresh / incognito).
 - [ ] A PDP loads; add to cart; drawer opens; **Checkout → `shop-precious-jewels.myshopify.com`
       → `shop.app`**, Shopify checkout loads (no 404, no bounce to `preciousjewels.co`).
-- [ ] **Place one real order with a real card**, complete it, confirm it appears in Shopify admin
+- [ ] **Place one real order with a real card** — **moved to drop day** (2026-10-01): nothing is
+      purchasable while `DROP_PENDING` is on, so do this right after the flag is flipped. Complete
+      it, confirm it appears in Shopify admin
       with correct **tax + shipping**, then **refund it**.
 - [ ] Confirmation email received and looks right.
 - [ ] `https://preciousjewels.co/robots.txt` and `/sitemap.xml` load and reference the real domain.
