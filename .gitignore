@@ -50,3 +50,6 @@ Thumbs.db
 # misc
 *.pem
 .turbo
+
+# owner-supplied photo originals (web-sized copies live in src/assets/)
+/product_pictures/

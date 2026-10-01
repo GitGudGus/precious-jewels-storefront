@@ -1,3 +1,9 @@
+import Image from 'next/image';
+import Link from 'next/link';
+
+import heroImage from '@/assets/home/hero-hoops.jpg';
+import hoopsImage from '@/assets/home/hoops-satin.jpg';
+import silverImage from '@/assets/home/silver-bracelets-satin.jpg';
 import { CollectionCard } from '@/components/collection/CollectionCard';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { ButtonLink } from '@/components/ui/Button';
@@ -31,6 +37,25 @@ const VALUE_PROPS = [
   { title: 'Made in Miami', body: 'Designed and shipped from South Florida.' },
 ];
 
+const EDITORIAL = [
+  {
+    image: hoopsImage,
+    alt: 'Four gold-filled tube hoop earrings in two sizes on cream satin',
+    title: 'The hoop edit',
+    body: 'Lightweight gold-filled hoops, from everyday to statement.',
+    href: '/collections/hoops',
+    cta: 'Shop hoops',
+  },
+  {
+    image: silverImage,
+    alt: 'Two silver box-chain bracelets, one with an evil-eye charm, on satin',
+    title: 'A little protection',
+    body: 'Evil-eye charms and fine chains to stack or wear alone.',
+    href: '/collections/bracelets',
+    cta: 'Shop bracelets',
+  },
+];
+
 async function getNewArrivals(): Promise<ProductListItem[]> {
   const page = await getCollectionProducts({
     handle: 'new-arrivals',
@@ -53,18 +78,14 @@ export default async function Home() {
 
   return (
     <>
-      <Section
-        tone="bg"
-        innerClassName="flex flex-col items-center gap-6 py-24 text-center md:py-32"
-      >
-        {/* No <Reveal> here on purpose — this is the first thing on the page
-            (already in view on load), so a scroll-triggered fade only adds
-            JS-hydration-gated delay to the LCP text with no UX payoff. */}
-        <div className="flex flex-col items-center gap-6">
+      {/* Split hero. No <Reveal> on purpose — it's in view on load, so a
+          scroll-triggered fade only adds hydration-gated delay to the LCP. */}
+      <section className="grid bg-accent-tint md:grid-cols-2">
+        <div className="flex w-full flex-col items-start justify-center gap-6 px-6 py-20 md:max-w-[37.5rem] md:justify-self-end md:px-10 md:py-28">
           <p className="text-[11px] tracking-[0.25em] text-ink-muted uppercase">
             Precious Jewels · Miami
           </p>
-          <h1 className="max-w-3xl text-4xl leading-tight md:text-6xl">
+          <h1 className="text-4xl leading-tight md:text-6xl">
             Everyday gold, made to last
           </h1>
           <p className="max-w-md text-ink-muted">
@@ -75,7 +96,19 @@ export default async function Home() {
             Shop the collection
           </ButtonLink>
         </div>
-      </Section>
+        <div className="relative aspect-4/5 md:aspect-auto md:min-h-[40rem]">
+          <Image
+            src={heroImage}
+            alt="Woman in profile wearing a thin gold hoop earring"
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            loading="eager"
+            fetchPriority="high"
+            placeholder="blur"
+            className="object-cover object-top"
+          />
+        </div>
+      </section>
 
       <Section tone="surface" innerClassName="py-14">
         <Reveal className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
@@ -104,8 +137,32 @@ export default async function Home() {
         </Reveal>
       </Section>
 
+      <Section tone="surface">
+        <Reveal className="grid gap-10 md:grid-cols-2 md:gap-8">
+          {EDITORIAL.map((tile) => (
+            <Link key={tile.href} href={tile.href} className="group block">
+              <div className="relative aspect-square overflow-hidden">
+                <Image
+                  src={tile.image}
+                  alt={tile.alt}
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  placeholder="blur"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                />
+              </div>
+              <h2 className="mt-5 text-2xl">{tile.title}</h2>
+              <p className="mt-1.5 text-sm text-ink-muted">{tile.body}</p>
+              <p className="mt-3 text-[11px] tracking-[0.15em] text-accent-deep uppercase underline">
+                {tile.cta}
+              </p>
+            </Link>
+          ))}
+        </Reveal>
+      </Section>
+
       {featured.length > 0 && (
-        <Section tone="surface">
+        <Section tone="bg">
           <Reveal>
             <h2 className="mb-10 text-center text-2xl md:text-3xl">
               Shop by category
