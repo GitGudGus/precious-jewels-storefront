@@ -45,7 +45,7 @@ const EDITORIAL = [
     title: 'The hoop edit',
     body: 'Lightweight gold-filled hoops, from everyday to statement.',
     href: '/collections/hoops',
-    cta: 'Shop hoops',
+    cta: 'See the hoops',
   },
   {
     image: silverImage,
@@ -53,7 +53,7 @@ const EDITORIAL = [
     title: 'A little protection',
     body: 'Evil-eye charms and fine chains to stack or wear alone.',
     href: '/collections/bracelets',
-    cta: 'Shop bracelets',
+    cta: 'See the bracelets',
   },
 ];
 
@@ -84,7 +84,7 @@ export default async function Home() {
       <section className="grid bg-accent-tint md:grid-cols-2">
         <div className="flex w-full flex-col items-start justify-center gap-6 px-6 py-20 md:max-w-[37.5rem] md:justify-self-end md:px-10 md:py-28">
           <p className="text-[11px] tracking-[0.25em] text-ink-muted uppercase">
-            Precious Jewels · Miami
+            Miami · First drop November 2026
           </p>
           <h1 className="text-4xl leading-tight md:text-6xl">
             Everyday gold, made to last
@@ -93,9 +93,12 @@ export default async function Home() {
             Gold-filled, 18k gold, and silver jewelry. Tarnish resistant,
             hypoallergenic, nickel free.
           </p>
-          <ButtonLink href="/collections" className="mt-2">
-            Shop the collection
-          </ButtonLink>
+          <div className="mt-2 flex flex-wrap gap-3">
+            <ButtonLink href="/collections">Preview the drop</ButtonLink>
+            <ButtonLink href="#newsletter" variant="outline">
+              Get first access
+            </ButtonLink>
+          </div>
         </div>
         <div className="relative aspect-4/5 md:aspect-auto md:min-h-[40rem]">
           <Image
@@ -125,7 +128,7 @@ export default async function Home() {
       <Section tone="bg">
         <Reveal>
           <div className="mb-10 flex items-baseline justify-between">
-            <h2 className="text-2xl md:text-3xl">New arrivals</h2>
+            <h2 className="text-2xl md:text-3xl">Coming in the drop</h2>
             <ButtonLink
               href="/collections/new-arrivals"
               variant="outline"
@@ -166,7 +169,7 @@ export default async function Home() {
         <Section tone="bg">
           <Reveal>
             <h2 className="mb-10 text-center text-2xl md:text-3xl">
-              Shop by category
+              Browse by category
             </h2>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               {featured.map((collection) => (
@@ -182,13 +185,15 @@ export default async function Home() {
 
       <Section
         tone="ink"
+        id="newsletter"
+        className="scroll-mt-24"
         innerClassName="on-ink flex flex-col items-center gap-5 py-20 text-center"
       >
         <h2 className="max-w-xl text-2xl md:text-3xl">
           Join the list for first access
         </h2>
         <p className="max-w-sm text-sm text-ink-invert/75">
-          New drops, restocks, and the occasional discount. No spam.
+          Be the first to know when the November drop goes live. No spam.
         </p>
         <NewsletterForm />
       </Section>

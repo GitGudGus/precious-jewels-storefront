@@ -10,6 +10,16 @@ export const FREE_SHIPPING_THRESHOLD: Money = {
   currencyCode: 'USD',
 };
 
+/**
+ * Pre-drop launch mode: the site is live but nothing is purchasable until the
+ * first drop (late November 2026), so "unavailable" reads as "coming soon"
+ * rather than "sold out". Flip to `false` when the drop goes live.
+ */
+export const DROP_PENDING = true;
+
+/** Label for anything not `availableForSale` (card badge, PDP button). */
+export const UNAVAILABLE_LABEL = DROP_PENDING ? 'Coming soon' : 'Sold out';
+
 /** Cookie holding the Shopify cart id (see `src/components/cart/actions.ts`). */
 export const CART_COOKIE = 'pj_cart';
 
