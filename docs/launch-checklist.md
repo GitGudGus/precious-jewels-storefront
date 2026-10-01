@@ -53,6 +53,11 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       Street, Miami, FL 33142`). Confirm they've been pasted in.
 - [x] Order confirmation + shipping-notification emails reviewed (Settings → Notifications) — logo,
       from-address, links point at `preciousjewels.co`. — 2026-09-04: owner confirmed correct.
+- [ ] **Checkout branding → Guava.** Settings → Checkout → Customize (checkout editor). Set the
+      primary/action button + accent colour to `#b1462c` (matches the storefront's `accent-deep`
+      CTAs; AA on the white checkout ground). The Shopify-hosted checkout keeps its own styling —
+      this is the only place to bring it in line with the site. (2026-09-10: owner flagged the
+      "Pay now" button still looks like default Shopify.)
 - [x] Tax: Settings → Taxes — Florida nexus set; spot-check tax on a FL address vs an out-of-state
       address at checkout. — 2026-09-04: owner confirmed "tax looks good."
 - [ ] Store password removed (Online Store → Preferences) — do this at cutover, not before.
@@ -141,6 +146,15 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       next step.
 - [ ] At the registrar: point apex + `www` at Vercel (A/ALIAS/ANAME per Vercel's instructions).
 - [ ] Wait for propagation (minutes at 300s TTL). Vercel domain status → "Valid Configuration".
+- [ ] **Replace the old Online Store theme with a redirect stub.** After cutover, checkout runs on
+      `shop-precious-jewels.myshopify.com`, and Shopify's checkout logo links back to that domain's
+      Online Store — i.e. the *old theme*. Also any old bookmark / crawler hitting the myshopify
+      domain sees the stale theme. Fix: publish a bare theme whose `layout/theme.liquid` is just a
+      redirect to `https://preciousjewels.co` + the current path. Shopify serves `/cart/*`,
+      `/checkouts/*`, `/account/*` at the platform level (not through the theme), so those flows
+      are unaffected — but **test all three after publishing**. (2026-09-10: owner flagged the
+      checkout logo bounce. This is the known headless-checkout limitation from the M2 notes; the
+      theme stub is the fix.)
 
 ## 3. Verify live (immediately after)
 
