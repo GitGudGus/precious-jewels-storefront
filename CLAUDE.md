@@ -130,6 +130,13 @@ opted-out existing customer isn't re-subscribed; `customerCreate` is rate-limite
 Shopify admin, no code. At the drop: re-publish the rest and **redeploy** (`dynamicParams = false`
 — new handles need a build).
 
+**Lighthouse / a11y pass — branch `launch-checklist-oct1` (PR open, 2026-10-01).** Eager
+first-row collection cards (`ProductGrid eagerCount`), `inert` on the closed cart drawer,
+`prefetch={false}` on `/account` links, lighter `--color-accent-tint` (`#f9e8e0`, AA with
+`accent-deep`), heading-order fixes. Numbers in `docs/launch-checklist.md` — **never run `prettier --write` on that file**, it
+collapses the hand-indented nested notes (it isn't Prettier-clean and CI doesn't check it). Owner also removed the
+34 teaser products from every sales channel except Headless.
+
 Gotcha: after a catalogue change in Shopify, a local `next build` can serve stale listings from
 `.next/cache/fetch-cache` (it showed "No products in this collection yet" for a collection that
 had three). `rm -rf .next/cache/fetch-cache` before trusting a local build.
