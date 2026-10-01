@@ -132,7 +132,17 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
         PDP 90; **accessibility 100** on all three; SEO 100. The homepage LCP is now the hero
         photo (it was the H1 text), simulated at 3.6s — observed LCP is under a second; the
         simulated figure is hydration JS on a 4×-throttled CPU delaying the image paint.
-      Still needs: one more run against the Production URL once these fixes are deployed.
+      - Production URL, after those fixes (two runs each): homepage 85–86, collection 87–88,
+        PDP 90–91; accessibility / best-practices / SEO **100** everywhere. Every page showed ~2s
+        of LCP "element render delay": the Sentry browser SDK was statically imported by
+        `instrumentation-client.ts`, so it sat in the main chunk (133k gzipped) ahead of the
+        first image paint.
+      - Fix (branch `lazy-sentry-client`): load Sentry on `requestIdleCallback` via
+        `src/sentry.client.ts`. Main chunk 133k → 72k, Sentry is a 59k chunk fetched after
+        paint. Local build with a dummy DSN: homepage 95, collection 94, PDP 98. Trade-off:
+        errors in the first second or so of a page load aren't reported.
+      Still needs: a Production run once that lands, and a **test error confirmed in Sentry**
+      (the lazy init has only been checked to load, not to deliver an event).
 - [ ] `axe` DevTools clean on the same three pages; one pass with VoiceOver.
 
 ### Monitoring
