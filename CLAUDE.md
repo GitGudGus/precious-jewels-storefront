@@ -113,21 +113,26 @@ enumeration). `src/components/newsletter/` = `actions.ts` (`'use server'`, valid
 `NewsletterForm` (client, `useActionState`). Known ceilings (see the `ponytail:` comment): an
 opted-out existing customer isn't re-subscribed; `customerCreate` is rate-limited per calling IP.
 
-**Pre-drop copy — branch `drop-preview-copy` (PR open, 2026-10-01).** `constants.ts`
-`DROP_PENDING = true` → `UNAVAILABLE_LABEL` ("Coming soon" instead of "Sold out") on `ProductCard`
-and `AddToCartButton`, plus a "Get first access to the drop" link → `/#newsletter` under the
-disabled PDP button. **At the drop: set `DROP_PENDING = false`** and redo the homepage copy (hero
-eyebrow "First drop November 2026", CTAs "Preview the drop" / "Get first access", "Coming in the
-drop", newsletter blurb — these are hardcoded in `page.tsx`, not flag-driven).
+**Pre-drop mode — merged (#22) + branch `drop-pending-no-purchase` (PR open, 2026-10-01).**
+`constants.ts` `DROP_PENDING = true` is the single launch switch:
 
-**Launch catalogue = a 1–3-products-per-category teaser (owner, 2026-10-01).** Recommended
-mechanism is Shopify-side, no code: unpublish everything else from the **Headless** sales channel
-(the storefront only sees what's published there). Listings follow within 15 min (ISR); at the
-drop, re-publish and **redeploy** (`dynamicParams = false` — new handles need a build).
-**State on 2026-10-01 after the owner's first attempt (Storefront API probe): inverted** — 321
-products still visible (253 still `availableForSale`), and the ~30 picks (e.g. `gold-hoops`,
-`mini-evil-eye`, `sol-studs`, `rope-anklet`) are the ones that _disappeared_. Owner needs to flip
-it in admin; re-probe (products count should be ~30, `availableForSale` 0) before launch.
+- `UNAVAILABLE_LABEL` → "Coming soon" instead of "Sold out" (`ProductCard`, `AddToCartButton`), plus
+  a "Get first access to the drop" link → `/#newsletter` under the disabled PDP button.
+- `reshape.ts` reports every product/variant as `availableForSale: false` regardless of Shopify
+  inventory — so the owner's **real stock counts stay untouched** — and `addItemAction` throws.
+  This only blocks purchases through _this_ site; Shopify itself would still sell the items.
+- **At the drop: set `DROP_PENDING = false`** and redo the homepage copy (hero eyebrow "First drop
+  November 2026", CTAs "Preview the drop" / "Get first access", "Coming in the drop", newsletter
+  blurb — hardcoded in `page.tsx`, not flag-driven).
+
+**Launch catalogue = a teaser (owner, 2026-10-01): 34 products published to the Headless channel**
+(1–5 per category, incl. the gift card; Bangle / Earrings / Gifts for mom are empty). Curated in
+Shopify admin, no code. At the drop: re-publish the rest and **redeploy** (`dynamicParams = false`
+— new handles need a build).
+
+Gotcha: after a catalogue change in Shopify, a local `next build` can serve stale listings from
+`.next/cache/fetch-cache` (it showed "No products in this collection yet" for a collection that
+had three). `rm -rf .next/cache/fetch-cache` before trusting a local build.
 
 **Milestone 3a (Content & legal pages) — merged.** The owner already authored this content in
 Shopify admin; we just render it — **no CMS**.
