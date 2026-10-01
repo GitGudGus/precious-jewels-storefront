@@ -107,7 +107,7 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       `next.config.ts` redirects to the hosted portal. Old theme deep links (`/account/orders`
       etc.) covered too. Native Moonstone `/account` stays deferred to M3b. Verify the redirect
       chain live in §3.
-- [ ] Lighthouse (mobile) ≥ 90 on the homepage, a collection page, and a PDP — run against the
+- [x] Lighthouse (mobile) ≥ 90 on the homepage, a collection page, and a PDP — run against the
       Production deployment. Verified locally (`next build` + `next start`) 2026-09-04/05, two real
       bugs found and fixed:
       - Homepage was 89 (LCP 3.5s, 2.79s of it "element render delay") — the hero's `<Reveal>`
@@ -141,8 +141,12 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
         `src/sentry.client.ts`. Main chunk 133k → 72k, Sentry is a 59k chunk fetched after
         paint. Local build with a dummy DSN: homepage 95, collection 94, PDP 98. Trade-off:
         errors in the first second or so of a page load aren't reported.
-      Still needs: a Production run once that lands, and a **test error confirmed in Sentry**
-      (the lazy init has only been checked to load, not to deliver an event).
+      - **Production URL with the lazy Sentry client deployed (2026-10-01, two runs each):
+        homepage 90 / 90, collection 97 / 98, PDP 98 / 96; accessibility, best-practices and SEO
+        100 on all three.** Largest script 73k. The lazily-initialised SDK posted an envelope to
+        Sentry's ingest endpoint (HTTP 200) during the run, so init works in production.
+      Still worth doing: trigger a deliberate test error and confirm it shows up (and alerts) in
+      the Sentry dashboard. The homepage sits right on 90 — the hero photo is its LCP.
 - [ ] `axe` DevTools clean on the same three pages; one pass with VoiceOver.
 
 ### Monitoring
