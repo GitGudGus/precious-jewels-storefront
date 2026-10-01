@@ -75,6 +75,7 @@ export function CartDrawer() {
     <div
       className={`fixed inset-0 z-50 ${isDrawerOpen ? '' : 'pointer-events-none'}`}
       aria-hidden={!isDrawerOpen}
+      inert={!isDrawerOpen}
     >
       <div
         onClick={closeDrawer}

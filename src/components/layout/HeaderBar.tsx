@@ -39,6 +39,7 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
           <div className="flex items-center">
             <Link
               href="/account"
+              prefetch={false}
               aria-label="Account"
               className="text-ink transition-opacity hover:opacity-70 md:hidden"
             >
@@ -67,6 +68,7 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
           <div className="flex items-center justify-end gap-5">
             <Link
               href="/account"
+              prefetch={false}
               className="hidden text-[11px] tracking-[0.16em] text-ink-muted uppercase transition-colors hover:text-accent-deep md:inline"
             >
               Account

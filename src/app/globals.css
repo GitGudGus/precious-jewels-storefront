@@ -18,7 +18,7 @@
    * cream and carries every CTA, link, and focus ring. */
   --color-accent: #d5674a;
   --color-accent-deep: #b1462c;
-  --color-accent-tint: #f7e3da;
+  --color-accent-tint: #f9e8e0; /* accent-deep text on it = 4.67:1 */
 
   --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-ovo), Georgia, 'Times New Roman', serif;
