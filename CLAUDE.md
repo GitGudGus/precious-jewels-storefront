@@ -17,7 +17,18 @@ Architecture: [docs/architecture.md](docs/architecture.md). Decision records: [d
 call Shopify directly from a component or route. This is what keeps hosting/framework changes
 cheap later.
 
-## Current status (as of 2026-09-03)
+## Current status (as of 2026-10-01)
+
+**▶ Pick up here: the DNS cutover is the only thing between `main` and a live site.** On
+2026-10-01 the owner was walked through the remaining operator steps one at a time and finished
+checkout colours, POS, Vercel Analytics and UptimeRobot. They **paused at `launch-checklist.md` §2
+step 1** (lower the DNS TTL to 300s + record the existing `@`/`www` records) and will come back
+when they have time. That step is **not confirmed done**. Two answers are still needed from them:
+which provider manages the DNS for `preciousjewels.co`, and the go-live day/time. Resume by
+guiding them **one step at a time** (their preference this session): TTL → wait 24h → Vercel
+Domains → remove store password → Shopify primary domain → registrar records → §3 verify
+(including swapping the two UptimeRobot monitors to `preciousjewels.co`). The site launches in
+pre-drop mode, so §3's add-to-cart and real-card checks move to drop day (§6).
 
 **Milestone 0 (Foundations) — complete.** Storefront scaffolded, connected to Shopify, live on
 Vercel, CI green, `main` protected.
@@ -405,24 +416,32 @@ fetch failed` means the request never got there — almost always a malformed `S
 
 ## Next steps (pick up here)
 
-Everything through M5 code is merged; `main` is deployable. Options for the next session, in
-likely priority order:
+`main` is deployed and launch-ready in pre-drop mode. In order:
 
-1. **Support the launch.** The owner works `docs/launch-checklist.md`. Claude tasks that may come
-   up: create a real 1200×630 OG image (`src/app/opengraph-image.png`) + wire it in `layout.tsx`;
-   a proper logo for the `Organization` JSON-LD; add redirects for URLs a live-site crawl turns
-   up; help debug the cutover.
-2. **Milestone 4 — search & merchandising.** Shopify Search & Discovery app powers `search()` +
+1. **Finish the launch — the DNS cutover.** See "Pick up here" at the top of Current status and
+   `docs/launch-checklist.md` ("Where we are" block, then §2–§3). Guide the owner one step at a
+   time. Claude tasks likely to come up: exact record instructions once the DNS provider is known;
+   debugging the cutover; the old-theme redirect stub (§2 last item); redirects for URLs that
+   Search Console turns up.
+2. **Drop day (late November 2026)** — `launch-checklist.md` §6. One PR: `DROP_PENDING = false` +
+   rewrite the pre-drop homepage copy; merge only after the owner has published the full catalogue
+   to the Headless channel; then the real-card test order.
+3. **Before the drop, if wanted:** photo wall / more editorial sections (needs individual full-res
+   on-model shots of real SKUs — the AI prompts are in the 2026-10-01 session; see the
+   `guava-accent-direction` memory), a per-product "notify me", a mobile nav drawer.
+4. **Milestone 4 — search & merchandising.** Shopify Search & Discovery app powers `search()` +
    filter facets via the Storefront API. Build `/search` (replace the `/search → /collections`
    redirect), predictive search in the header, faceted filtering on collection pages (URL state),
    related products on the PDP, a reviews integration (Judge.me / metaobjects). See ROADMAP M4.
-3. **Milestone 3b — headless customer accounts.** Customer Account API (OAuth). Needs Shopify
+5. **Milestone 3b — headless customer accounts.** Customer Account API (OAuth). Needs Shopify
    admin config first. See ROADMAP M3.
-4. **Backlog** — Instagram → journal feed (`instagram-to-blog-idea` memory), contact form,
-   newsletter capture, mobile nav drawer, sticky mobile add-to-cart, real hero photography.
+6. **Backlog** — Instagram → journal feed (`instagram-to-blog-idea` memory), contact form, sticky
+   mobile add-to-cart, re-subscribing opted-out customers (needs an Admin API token).
 
 **Working process:** plan mode → plan file → approval → staged PRs, each with a code commit + a
-docs commit → CI green → user clicks the Vercel preview → merge. Live GraphQL probes (a scratch
+docs commit → CI green → user clicks the Vercel preview → merge. In the 2026-10-01 session the
+owner skipped plan mode for small changes: Claude made the change on a branch, verified it, and
+waited for the word "commit" before committing and opening the PR; the owner rebase-merges. Live GraphQL probes (a scratch
 `.mjs` reading `.env.local`) to de-risk the Shopify surface before writing the data layer.
 **Browser-verify every UI PR** in headless Opera (`--headless --dump-dom --enable-logging=stderr`,
 also `--screenshot`) — CI and SSR checks miss client-runtime and visual breakage (the M2 white

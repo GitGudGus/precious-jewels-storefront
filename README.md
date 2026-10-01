@@ -30,10 +30,27 @@ policy pages render from Shopify admin; `/journal` blog shell; `sitemap.xml`. Cu
 (M3b) deferred post-launch.
 
 ✅ Milestone 5 (launch prep) — code done. SEO (sitemap, robots, JSON-LD, canonicals), old-theme
-redirects, accessibility pass, Vercel Analytics + Speed Insights, env-gated Sentry. Remaining is
-operator work — the cutover runbook is [docs/launch-checklist.md](docs/launch-checklist.md).
+redirects, accessibility pass, Vercel Analytics + Speed Insights, env-gated Sentry (loaded lazily
+in the browser). Lighthouse mobile on production: 90 / 97 / 96+ (home / collection / product),
+accessibility, best-practices and SEO 100.
 
-⏭️ Next build milestone: M4 (search & merchandising) or M3b (customer accounts).
+🎨 Guava refresh — done. Warm-coral accent (`accent-deep` `#b1462c`) on every CTA, link and focus
+ring; split photo hero and an editorial band on the homepage (images in `src/assets/home/`).
+
+✅ Newsletter signup — done. The homepage form creates a Shopify customer with marketing consent
+(`src/lib/shopify/customer.ts`, `src/components/newsletter/`).
+
+🚧 **Pre-drop launch mode — on.** The site goes live with a 34-product teaser catalogue and nothing
+purchasable: `DROP_PENDING` in `src/lib/shopify/constants.ts` makes every product read "Coming
+soon" and blocks add-to-cart, whatever Shopify's inventory says. The first drop is planned for
+late November 2026 — flip the flag then.
+
+⏳ **Where things stand (2026-10-01):** every pre-cutover task is done (checkout colours, POS,
+analytics, uptime monitors, policies, payments). **The only thing left before the site is live is
+the DNS cutover** — lower the TTL a day ahead, then switch. Runbook, current position and the
+drop-day steps: [docs/launch-checklist.md](docs/launch-checklist.md).
+
+⏭️ Next build milestone after launch: M4 (search & merchandising) or M3b (customer accounts).
 
 ## Stack
 
@@ -44,6 +61,7 @@ operator work — the cutover runbook is [docs/launch-checklist.md](docs/launch-
 | Commerce API | Shopify Storefront API (GraphQL)    |
 | Hosting      | Vercel                              |
 | Errors       | Sentry (M5)                         |
+| Uptime       | UptimeRobot (homepage + a PDP)      |
 
 Phase 2 adds a separate repo: a Django + DRF wholesale/B2B portal.
 

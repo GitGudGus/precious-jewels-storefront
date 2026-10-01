@@ -7,10 +7,18 @@ This document is written for a beginner developer. Each milestone tells you the 
 **why it matters**, **what you build**, **what you learn**, and a **definition of done** so you
 always know when to move on.
 
-> **Status (2026-09-03):** M0, M1, M2, M3a, the Moonstone design pass, and M5's code are all
-> merged to `main`. What's left before launch is operator work — `docs/launch-checklist.md`.
-> Next build milestone: **M4** (search) or **M3b** (customer accounts, deferred from M3).
-> Detailed state + working process: `CLAUDE.md`.
+> **Status (2026-10-01):** M0, M1, M2, M3a, the Moonstone design pass, the Guava refresh, the
+> newsletter signup and all of M5's code are merged to `main`. Every pre-cutover operator task is
+> done. **The one step left before launch is the DNS cutover** (`docs/launch-checklist.md` §2) —
+> the owner paused there and will come back to it.
+>
+> **Launch plan changed:** the site goes live in a **pre-drop mode** — a 34-product teaser
+> catalogue, everything "Coming soon", nothing purchasable — and runs about a month collecting
+> analytics and newsletter signups. The **first drop is late November 2026** (see "Pre-drop launch
+> and the first drop" under Milestone 5).
+>
+> Next build milestone after launch: **M4** (search) or **M3b** (customer accounts, deferred from
+> M3). Detailed state + working process: `CLAUDE.md`.
 
 ---
 
@@ -374,13 +382,44 @@ know if something breaks.
 `SHOPIFY_CHECKOUT_DOMAIN` override, Vercel Analytics + Speed Insights, env-gated Sentry. Full
 operator runbook: [docs/launch-checklist.md](docs/launch-checklist.md).
 
+**Pre-drop launch and the first drop** (added 2026-10-01)
+
+The owner chose to launch before selling: the site goes live as a teaser, gathers a month of
+analytics and email signups, then opens with a live drop in late November 2026.
+
+- **Teaser catalogue — Shopify admin, no code.** The storefront only sees products published to
+  the **Headless** sales channel, so the launch catalogue is curated there: 34 products, 1–5 per
+  category. Everything stays on the Point of Sale channel for pop-ups.
+- **Nothing purchasable — one flag.** `DROP_PENDING` in `src/lib/shopify/constants.ts`. While it
+  is `true`, `reshape.ts` reports every product and variant as unavailable (so real inventory
+  counts in Shopify are never touched), cards and the PDP button read "Coming soon", the PDP links
+  to the newsletter, and the add-to-cart server action refuses. It only blocks purchases through
+  this site.
+- **Lead capture.** The homepage newsletter form creates a Shopify customer with marketing
+  consent via the Storefront API `customerCreate` mutation (there is no "subscribe" mutation).
+- **Homepage** — split photo hero, editorial tiles, and pre-drop copy ("Preview the drop",
+  "Get first access", "Coming in the drop"). The copy is hardcoded and gets rewritten at the drop.
+- **Performance.** Lighthouse mobile on production after this work: homepage 90, collection
+  97–98, PDP 96–98; accessibility / best-practices / SEO 100. Getting there meant loading the
+  Sentry browser SDK lazily (it was in the main chunk) and eager-loading the first row of
+  collection cards.
+- **Drop day** is a short runbook: publish the full catalogue to Headless → set
+  `DROP_PENDING = false` and rewrite the homepage copy → merge (the deploy creates the new product
+  pages) → real-card test order → email the list. `docs/launch-checklist.md` §6.
+
+**Operator status (2026-10-01):** payments, policies, notification emails, tax, checkout colours,
+POS, Vercel Analytics, UptimeRobot monitors and Lighthouse are all done. Remaining: lower the DNS
+TTL a day ahead, then the cutover (§2), then verify (§3). The real-card test order moves to drop
+day.
+
 **Definition of done** (operator, at cutover)
 
 - [ ] `preciousjewels.co` serves the new storefront (set Shopify primary domain →
       `shop-precious-jewels.myshopify.com`, then point apex + `www` DNS at Vercel, back-to-back —
       see `docs/launch-checklist.md` §0/§2)
 - [ ] A real customer order completes and appears in Shopify with correct tax + shipping
-- [ ] Sentry is receiving events; you get an alert on a test error (add `NEXT_PUBLIC_SENTRY_DSN`)
+      (**drop day** — nothing is purchasable at launch)
+- [x] Sentry is receiving events; you get an alert on a test error (add `NEXT_PUBLIC_SENTRY_DSN`)
 - [ ] Search Console shows the sitemap accepted, no coverage errors
 
 ---
@@ -500,6 +539,22 @@ Do this _as you go_, not at the end. It's what turns "I made a website" into evi
   channel from the Shopify App Store and click **Create storefront** instead (see M0 step 3). The
   Dev Dashboard's `client_credentials` grant (`/admin/oauth/access_token`) issues an **Admin API**
   token, not a Storefront one — don't use it for this.
+
+- **What the storefront shows is controlled by the Headless sales channel.** Unpublishing a
+  product from Headless hides it from the site (listings within 15 minutes; its page 404s after
+  the next revalidation). Publishing a _new_ handle needs a redeploy before its page exists
+  (`dynamicParams = false`). Shopify bulk channel edits run in the background — re-check after a
+  minute before concluding one didn't work, and remember "select all" only covers the first page
+  of 50 unless you click "Select all N products".
+- **Removing products from every channel also removes them from POS.** Keep the Point of Sale
+  channel ticked for anything sold at pop-ups.
+- **A statically imported Sentry browser SDK lands in the main client chunk** and delays the first
+  image paint on every page. `src/instrumentation-client.ts` loads it on `requestIdleCallback`
+  through `src/sentry.client.ts` (named re-exports so it tree-shakes).
+- **A local `next build` can serve stale Shopify data** from `.next/cache/fetch-cache` after a
+  catalogue change. Delete that folder before trusting a local build.
+- **Don't run `prettier --write` on `docs/launch-checklist.md`** — it flattens the hand-indented
+  nested notes.
 
 ## Appendix C — Rough sequencing
 
