@@ -7,6 +7,7 @@ import {
   CART_COOKIE,
   CART_COOKIE_MAX_AGE,
   createCart,
+  DROP_PENDING,
   getCart,
   removeCartLines,
   updateCartLines,
@@ -62,6 +63,8 @@ export async function addItemAction(
   if (!VARIANT_ID.test(variantId)) {
     throw new Error('Invalid variant id');
   }
+  // The UI already disables the button; this stops a hand-crafted request.
+  if (DROP_PENDING) throw new Error('Nothing is on sale until the drop');
 
   const cartId = await readCartId();
   if (!cartId) return startCart(variantId);
