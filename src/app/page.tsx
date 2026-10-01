@@ -5,6 +5,7 @@ import heroImage from '@/assets/home/hero-hoops.jpg';
 import hoopsImage from '@/assets/home/hoops-satin.jpg';
 import silverImage from '@/assets/home/silver-bracelets-satin.jpg';
 import { CollectionCard } from '@/components/collection/CollectionCard';
+import { NewsletterForm } from '@/components/newsletter/NewsletterForm';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { ButtonLink } from '@/components/ui/Button';
 import { Reveal } from '@/components/ui/Reveal';
@@ -189,22 +190,7 @@ export default async function Home() {
         <p className="max-w-sm text-sm text-ink-invert/75">
           New drops, restocks, and the occasional discount. No spam.
         </p>
-        {/* Visual only for now — wiring email capture (Shopify marketing
-            consent) is a later milestone. */}
-        <div className="mt-2 flex w-full max-w-sm border border-ink-invert/40">
-          <input
-            type="email"
-            placeholder="Email address"
-            aria-label="Email address"
-            className="flex-1 bg-transparent px-4 py-3 text-sm text-ink-invert placeholder:text-ink-invert/60"
-          />
-          <button
-            type="button"
-            className="bg-ink-invert px-6 text-[11px] tracking-[0.15em] text-ink uppercase"
-          >
-            Sign up
-          </button>
-        </div>
+        <NewsletterForm />
       </Section>
     </>
   );

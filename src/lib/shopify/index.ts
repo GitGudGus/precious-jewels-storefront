@@ -20,6 +20,7 @@ export {
   getCollections,
   type GetCollectionProductsOptions,
 } from './collections';
+export { subscribeToNewsletter } from './customer';
 export {
   CART_COOKIE,
   CART_COOKIE_MAX_AGE,
