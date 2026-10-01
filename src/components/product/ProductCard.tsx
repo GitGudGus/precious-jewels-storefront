@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { Price } from '@/components/Price';
+import { UNAVAILABLE_LABEL } from '@/lib/shopify/constants';
 import type { ProductListItem } from '@/lib/shopify/types';
 
 /**
@@ -27,7 +28,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         )}
         {!product.availableForSale && (
           <span className="absolute top-3 left-3 bg-bg px-2 py-1 text-[10px] tracking-[0.15em] text-ink-muted uppercase">
-            Sold out
+            {UNAVAILABLE_LABEL}
           </span>
         )}
       </div>
