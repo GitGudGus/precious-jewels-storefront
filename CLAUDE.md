@@ -106,6 +106,16 @@ Implications: the sold-out state is the main customer experience at launch (card
 capturing interest for the drop (the newsletter band is still visual-only) matters more than
 checkout polish until then.
 
+**Newsletter signup — branch `newsletter-signup` (stacked on `guava-hero`), uncommitted as of
+2026-10-01.** `src/lib/shopify/customer.ts` `subscribeToNewsletter(email)` → Storefront
+`customerCreate` with `acceptsMarketing: true` + a throwaway password (there is no Storefront
+"subscribe" mutation; the public token does have customer-write access — probed with an invalid
+email, got `customerUserErrors`, not `ACCESS_DENIED`). `TAKEN` / `CUSTOMER_DISABLED` count as
+success (no email enumeration). `src/components/newsletter/` = `actions.ts` (`'use server'`,
+validation + honeypot) + `NewsletterForm` (client, `useActionState`). Known ceilings (see the
+`ponytail:` comment): an opted-out existing customer isn't re-subscribed; `customerCreate` is
+rate-limited per calling IP. **Not yet verified with a real signup** — needs one on the preview.
+
 **Milestone 3a (Content & legal pages) — merged.** The owner already authored this content in
 Shopify admin; we just render it — **no CMS**.
 
