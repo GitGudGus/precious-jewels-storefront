@@ -137,6 +137,13 @@ first-row collection cards (`ProductGrid eagerCount`), `inert` on the closed car
 collapses the hand-indented nested notes (it isn't Prettier-clean and CI doesn't check it). Owner also removed the
 34 teaser products from every sales channel except Headless.
 
+**Lazy Sentry client — branch `lazy-sentry-client` (PR open, 2026-10-01).**
+`instrumentation-client.ts` now loads Sentry on `requestIdleCallback` through
+`src/sentry.client.ts` (named re-exports so it tree-shakes; `import('@sentry/nextjs')` directly
+produced a 169k chunk). The static import had Sentry in the main chunk and cost ~2s of simulated
+LCP render delay on every page (production Lighthouse 85–91 → local 94–98). Trade-off: errors
+before the SDK loads aren't reported. Not yet verified that an event reaches Sentry.
+
 Gotcha: after a catalogue change in Shopify, a local `next build` can serve stale listings from
 `.next/cache/fetch-cache` (it showed "No products in this collection yet" for a collection that
 had three). `rm -rf .next/cache/fetch-cache` before trusting a local build.
