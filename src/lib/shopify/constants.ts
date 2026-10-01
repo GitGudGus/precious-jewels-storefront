@@ -13,7 +13,10 @@ export const FREE_SHIPPING_THRESHOLD: Money = {
 /**
  * Pre-drop launch mode: the site is live but nothing is purchasable until the
  * first drop (late November 2026), so "unavailable" reads as "coming soon"
- * rather than "sold out". Flip to `false` when the drop goes live.
+ * rather than "sold out". While it's on, `reshape.ts` reports every product and
+ * variant as unavailable regardless of Shopify inventory (so real stock counts
+ * stay untouched) and `addItemAction` refuses to add to the cart. Flip to
+ * `false` when the drop goes live.
  */
 export const DROP_PENDING = true;
 

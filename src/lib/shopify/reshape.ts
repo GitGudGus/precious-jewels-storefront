@@ -4,6 +4,7 @@
  * raw shape.
  */
 
+import { DROP_PENDING } from './constants';
 import type {
   Article,
   ArticleListItem,
@@ -129,7 +130,7 @@ function reshapeVariant(variant: RawProductVariant): ProductVariant {
   return {
     id: variant.id,
     title: variant.title,
-    availableForSale: variant.availableForSale,
+    availableForSale: variant.availableForSale && !DROP_PENDING,
     price: reshapeMoney(variant.price),
     selectedOptions: variant.selectedOptions,
     image: reshapeImage(variant.image),
@@ -162,7 +163,7 @@ export function reshapeProductListItem(
   return {
     handle: product.handle,
     title: product.title,
-    availableForSale: product.availableForSale,
+    availableForSale: product.availableForSale && !DROP_PENDING,
     featuredImage: reshapeImage(product.featuredImage),
     priceRange: {
       minVariantPrice: reshapeMoney(product.priceRange.minVariantPrice),
