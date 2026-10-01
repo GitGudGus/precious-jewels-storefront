@@ -118,7 +118,7 @@ export default async function Home() {
         <Reveal className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
           {VALUE_PROPS.map((prop) => (
             <div key={prop.title} className="space-y-1.5">
-              <h3 className="text-sm tracking-[0.08em]">{prop.title}</h3>
+              <h2 className="text-sm tracking-[0.08em]">{prop.title}</h2>
               <p className="text-xs text-ink-muted">{prop.body}</p>
             </div>
           ))}

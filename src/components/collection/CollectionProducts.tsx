@@ -92,7 +92,8 @@ export function CollectionProducts({
       </div>
 
       <div className={pending ? 'opacity-60 transition-opacity' : undefined}>
-        <ProductGrid products={items} />
+        <h2 className="sr-only">Products</h2>
+        <ProductGrid products={items} eagerCount={4} />
       </div>
 
       {cursor && (

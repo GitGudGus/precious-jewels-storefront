@@ -11,7 +11,13 @@ import type { ProductListItem } from '@/lib/shopify/types';
  */
 const CARD_SIZES = '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw';
 
-export function ProductCard({ product }: { product: ProductListItem }) {
+export function ProductCard({
+  product,
+  eager = false,
+}: {
+  product: ProductListItem;
+  eager?: boolean;
+}) {
   const { minVariantPrice, maxVariantPrice } = product.priceRange;
 
   return (
@@ -23,6 +29,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
             alt={product.featuredImage.altText ?? product.title}
             fill
             sizes={CARD_SIZES}
+            loading={eager ? 'eager' : 'lazy'}
             className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         )}
