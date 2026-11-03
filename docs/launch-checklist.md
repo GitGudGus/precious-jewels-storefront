@@ -6,16 +6,25 @@ live.
 
 ---
 
-## Where we are (2026-10-01) — read this to pick up
+## Where we are (2026-11-01) — read this to pick up
+
+**Fully live as of 2026-11-02: redirect stub published, products off the Online Store, password
+removed.** Left: the newsletter test and UptimeRobot swap in §3, then §6. The 2026-10-01 notes below are
+history.
+
+## 2026-10-01 notes
 
 **Everything in §1 (pre-cutover) is done except the optional `axe` / VoiceOver pass.** The owner
 paused at the very start of §2. What is left, in order:
 
 1. **§2 step 1 — lower the DNS TTL to 300s and write down the current records.** Instructions
    were given on 2026-10-01; **the owner has not confirmed doing it** — treat it as not done.
-2. **Two answers needed from the owner before the switch:** (a) where the DNS for
-   `preciousjewels.co` is managed (registrar / Shopify-managed), so the record instructions can be
-   exact; (b) the go-live day and a quiet ~30-minute window.
+2. **DNS is managed by Shopify** (owner, 2026-10-01) — records are edited in Shopify admin →
+   Settings → Domains → `preciousjewels.co` → DNS settings, not at an outside registrar. Two
+   things to check there when we resume: whether Shopify's editor exposes a TTL field at all (if
+   not, skip the TTL step and expect propagation to take as long as Shopify's fixed TTL), and
+   that it lets the `@` A record and `www` CNAME be pointed at Vercel while the domain is still
+   connected to the store. **Go-live date: TBD** — needs a quiet ~30-minute window.
 3. **§2 — the cutover**, at least 24 hours after the TTL change.
 4. **§3 — verify live**, noting the pre-drop caveats there (no add-to-cart, no real-card order).
 5. **§6 — drop day** (late November 2026): flip `DROP_PENDING`, re-publish the catalogue, real-card
@@ -197,8 +206,11 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 - [ ] **1 day before:** lower the TTL on `preciousjewels.co` + `www` DNS records to 300s, and
       **write down / screenshot every existing `@` and `www` record first** (type, name, value,
       TTL) — that's the rollback copy for §4. Change only the TTL; leave the values pointing at
-      Shopify. (2026-10-01: instructions given, **not confirmed done**. Still unknown: which
-      provider manages the DNS.)
+      Shopify. (2026-10-01: instructions given, **not confirmed done**. DNS is Shopify-managed —
+      Settings → Domains → `preciousjewels.co` → DNS settings; the TTL may not be editable there.)
+      **Rollback copy (2026-11-01):** `@` A `23.227.38.32`; `@` AAAA `2620:0127:f00f:3::`; `www`
+      CNAME `shops.myshopify.com`. At the switch, the AAAA must go too, or IPv6 visitors stay on
+      Shopify. Leave the MX, TXT and `mailer`/`_domainkey` CNAME records alone (email).
 - [ ] In Vercel → project → Domains: add `preciousjewels.co` and `www.preciousjewels.co`. Vercel
       shows the exact records needed. (Don't switch DNS yet — just have the records ready.)
 - [ ] Remove the store password (Online Store → Preferences).
@@ -207,7 +219,7 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       next step.
 - [ ] At the registrar: point apex + `www` at Vercel (A/ALIAS/ANAME per Vercel's instructions).
 - [ ] Wait for propagation (minutes at 300s TTL). Vercel domain status → "Valid Configuration".
-- [ ] **Replace the old Online Store theme with a redirect stub.** After cutover, checkout runs on
+- [x] **Replace the old Online Store theme with a redirect stub.** _(Done 2026-11-02: checkout and `/account` tested; `/cart/*` covered by the checkout test.)_ After cutover, checkout runs on
       `shop-precious-jewels.myshopify.com`, and Shopify's checkout logo links back to that domain's
       Online Store — i.e. the *old theme*. Also any old bookmark / crawler hitting the myshopify
       domain sees the stale theme. Fix: publish a bare theme whose `layout/theme.liquid` is just a
@@ -269,7 +281,7 @@ The site is live but in pre-drop mode until this runs. Do it in this order.
       counts are right — they were never zeroed, the site just hides availability.
 - [ ] **Code (one PR):** set `DROP_PENDING = false` in `src/lib/shopify/constants.ts`, and rewrite
       the hardcoded pre-drop homepage copy in `src/app/page.tsx` (hero eyebrow "Miami · First drop
-      November 2026", CTAs "Preview the drop" / "Get first access", "Coming in the drop", the
+      November 2026", CTAs "Preview our merch" / "Get first access", "Coming in the drop", the
       newsletter blurb, and the success message in `src/components/newsletter/actions.ts`).
 - [ ] **Merge → the deploy is what makes it live.** `dynamicParams = false` means the newly
       published products only get pages on a new build, so the merge must come _after_ the

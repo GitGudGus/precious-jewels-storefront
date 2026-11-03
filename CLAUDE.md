@@ -19,12 +19,24 @@ cheap later.
 
 ## Current status (as of 2026-10-01)
 
-**▶ Pick up here: the DNS cutover is the only thing between `main` and a live site.** On
+**▶ Pick up here (2026-11-02): FULLY LIVE on `preciousjewels.co` via Vercel (project
+`preciousjewels-mia`, team `herp-derpers`), store password removed.** Primary domain = myshopify;
+`@` A → `216.198.79.1`, AAAA deleted, `www` CNAME → Vercel (308 to the apex). Old theme = a published
+duplicate whose `layout/theme.liquid` is a redirect stub (original kept as rollback); non-teaser
+products are off the Online Store channel. Verified: password page before removal, `/account` login,
+and a real checkout URL all work with the stub. Quirk: myshopify `/products/tiffany` lands on the
+homepage rather than the same path (owner's browser, cause unknown, left alone; myshopify 429s curl).
+**Still open: newsletter test on the live domain (owner deferred), UptimeRobot monitors → live URLs,
+PR #28 merge.** Launch post is `/journal/new-website-holiday-jewelry-drop`. Owner kept New Arrivals
+live, reversing a brief plan to hide it. Only Instagram is in `SOCIAL_LINKS` (`constants.ts`).
+
+**Older status: the DNS cutover is the only thing between `main` and a live site.** On
 2026-10-01 the owner was walked through the remaining operator steps one at a time and finished
 checkout colours, POS, Vercel Analytics and UptimeRobot. They **paused at `launch-checklist.md` §2
 step 1** (lower the DNS TTL to 300s + record the existing `@`/`www` records) and will come back
-when they have time. That step is **not confirmed done**. Two answers are still needed from them:
-which provider manages the DNS for `preciousjewels.co`, and the go-live day/time. Resume by
+when they have time. That step is **not confirmed done**. The DNS for `preciousjewels.co` is
+**managed by Shopify** (Settings → Domains → the domain → DNS settings — check whether a TTL field
+exists and whether `@`/`www` can be pointed at Vercel there); the **go-live date is TBD**. Resume by
 guiding them **one step at a time** (their preference this session): TTL → wait 24h → Vercel
 Domains → remove store password → Shopify primary domain → registrar records → §3 verify
 (including swapping the two UptimeRobot monitors to `preciousjewels.co`). The site launches in
@@ -133,7 +145,7 @@ opted-out existing customer isn't re-subscribed; `customerCreate` is rate-limite
   inventory — so the owner's **real stock counts stay untouched** — and `addItemAction` throws.
   This only blocks purchases through _this_ site; Shopify itself would still sell the items.
 - **At the drop: set `DROP_PENDING = false`** and redo the homepage copy (hero eyebrow "First drop
-  November 2026", CTAs "Preview the drop" / "Get first access", "Coming in the drop", newsletter
+  November 2026", CTAs "Preview our merch" / "Get first access", "Coming in the drop", newsletter
   blurb — hardcoded in `page.tsx`, not flag-driven).
 
 **Launch catalogue = a teaser (owner, 2026-10-01): 34 products published to the Headless channel**
@@ -171,7 +183,7 @@ Shopify admin; we just render it — **no CMS**.
 - Routes (all SSG, ISR 900s): `/pages/[handle]` (about-us, faqs, sizing-chart, contact-us-1,
   wholesale — contact gets a `mailto:` CTA), `/policies/[handle]` (privacy-policy, refund-policy,
   terms-of-service, shipping-policy — empty policy → contact-line fallback), `/journal` (empty
-  state) + `/journal/[handle]` (`dynamicParams=false`, 0 articles today).
+  state) + `/journal/[handle]` (renders new articles on demand since #28, so posts need no redeploy).
 - `Footer` rebuilt (Shop / Company / Help columns + Privacy/Terms bottom bar); header nav gained
   Journal + About. `src/app/sitemap.ts` enumerates everything.
 
