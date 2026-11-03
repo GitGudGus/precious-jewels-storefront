@@ -9,7 +9,7 @@ live.
 ## Where we are (2026-11-01) — read this to pick up
 
 **Fully live as of 2026-11-02: redirect stub published, products off the Online Store, password
-removed.** Left: the newsletter test and UptimeRobot swap in §3, then §6. The 2026-10-01 notes below are
+removed.** §3 done (newsletter + UptimeRobot verified by the owner). Left: §6 on drop day. The 2026-10-01 notes below are
 history.
 
 ## 2026-10-01 notes

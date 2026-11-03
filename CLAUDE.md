@@ -26,9 +26,9 @@ duplicate whose `layout/theme.liquid` is a redirect stub (original kept as rollb
 products are off the Online Store channel. Verified: password page before removal, `/account` login,
 and a real checkout URL all work with the stub. Quirk: myshopify `/products/tiffany` lands on the
 homepage rather than the same path (owner's browser, cause unknown, left alone; myshopify 429s curl).
-**Still open: newsletter test on the live domain (owner deferred), UptimeRobot monitors → live URLs,
-PR #28 merge.** Launch post is `/journal/new-website-holiday-jewelry-drop`. Owner kept New Arrivals
-live, reversing a brief plan to hide it. Only Instagram is in `SOCIAL_LINKS` (`constants.ts`).
+Newsletter verified on the live domain and UptimeRobot moved to live URLs (owner, 2026-11-02);
+#28 merged. Launch post is `/journal/new-website-holiday-jewelry-drop`. Owner kept New Arrivals
+live, reversing a brief plan to hide it. Instagram is the only social account (owner) — `SOCIAL_LINKS` in `constants.ts`.
 
 **Older status: the DNS cutover is the only thing between `main` and a live site.** On
 2026-10-01 the owner was walked through the remaining operator steps one at a time and finished
