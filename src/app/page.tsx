@@ -94,7 +94,7 @@ export default async function Home() {
             hypoallergenic, nickel free.
           </p>
           <div className="mt-2 flex flex-wrap gap-3">
-            <ButtonLink href="/collections">Preview the drop</ButtonLink>
+            <ButtonLink href="/collections">Preview our merch</ButtonLink>
             <ButtonLink href="#newsletter" variant="outline">
               Get first access
             </ButtonLink>
