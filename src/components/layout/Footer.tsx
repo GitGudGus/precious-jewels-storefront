@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { SOCIAL_LINKS } from '@/lib/shopify/constants';
+
 const COLUMNS = [
   {
     heading: 'Shop',
@@ -42,6 +44,19 @@ export function Footer() {
               Gold-filled, 18k gold, and silver jewelry from Miami. Tarnish
               resistant, hypoallergenic, nickel free.
             </p>
+            <div className="flex gap-4 text-sm">
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.href}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-ink-muted underline transition-colors hover:text-accent-deep"
+                >
+                  {social.label}
+                </a>
+              ))}
+            </div>
           </div>
 
           {COLUMNS.map((column) => (

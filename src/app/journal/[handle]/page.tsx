@@ -9,8 +9,8 @@ import { formatDate } from '@/lib/date';
 import { getArticle, getArticleHandles } from '@/lib/shopify';
 
 export const revalidate = 900;
-// New articles need a redeploy to appear (same call as products/collections).
-export const dynamicParams = false;
+// Unlike products/collections, new articles render on demand: the owner posts
+// from Shopify admin and shouldn't need a redeploy. Unknown handles still 404.
 
 export async function generateStaticParams() {
   const handles = await getArticleHandles();

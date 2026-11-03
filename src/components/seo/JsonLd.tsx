@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL, SITE_URL } from '@/lib/shopify/constants';
+import { CONTACT_EMAIL, SITE_URL, SOCIAL_LINKS } from '@/lib/shopify/constants';
 
 /** Renders a `<script type="application/ld+json">` for the given structured data. */
 export function JsonLd({ data }: { data: Record<string, unknown> }) {
@@ -26,7 +26,7 @@ export function OrganizationJsonLd() {
           addressRegion: 'FL',
           addressCountry: 'US',
         },
-        sameAs: ['https://www.instagram.com/preciousjewelsmia/'],
+        sameAs: SOCIAL_LINKS.map((social) => social.href),
       }}
     />
   );

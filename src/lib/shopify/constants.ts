@@ -35,6 +35,11 @@ export const CART_COOKIE_MAX_AGE = 60 * 60 * 24 * 14;
  */
 export const CONTACT_EMAIL = 'preciousjewelsmia@gmail.com';
 
+/** Official profiles: footer links + `sameAs` in the Organization JSON-LD. */
+export const SOCIAL_LINKS = [
+  { href: 'https://www.instagram.com/preciousjewelsmia/', label: 'Instagram' },
+];
+
 /** Shopify page handle for the contact page (gets a mailto CTA on its route). */
 export const CONTACT_PAGE_HANDLE = 'contact-us-1';
 
