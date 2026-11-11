@@ -17,7 +17,39 @@ Architecture: [docs/architecture.md](docs/architecture.md). Decision records: [d
 call Shopify directly from a component or route. This is what keeps hosting/framework changes
 cheap later.
 
-## Current status (as of 2026-09-03)
+## Current status (as of 2026-10-01)
+
+**▶ Pick up here (2026-11-10): PAUSED until a December restock (#30).** The owner took the site down
+to get new merch, prices and photos. The domain stays on Vercel; `src/proxy.ts` rewrites every page to
+`/back-soon` ("Back in December": newsletter + Instagram + CSS snowfall), and the announcement strip
+is a rolling holiday banner. Shopify store password is back on; the stub theme stays published.
+**Relaunch = one PR:** delete `src/proxy.ts` + `src/app/back-soon/`, restore the free-shipping
+announcement (original line in a `HeaderBar.tsx` comment), refresh homepage copy; then the drop-day
+steps in `launch-checklist.md` §6. Owner may also check other sales channels (Shop, Facebook &
+Instagram, Google & YouTube) still list products.
+
+**Previous (2026-11-02): FULLY LIVE on `preciousjewels.co` via Vercel (project
+`preciousjewels-mia`, team `herp-derpers`), store password removed.** Primary domain = myshopify;
+`@` A → `216.198.79.1`, AAAA deleted, `www` CNAME → Vercel (308 to the apex). Old theme = a published
+duplicate whose `layout/theme.liquid` is a redirect stub (original kept as rollback); non-teaser
+products are off the Online Store channel. Verified: password page before removal, `/account` login,
+and a real checkout URL all work with the stub. Quirk: myshopify `/products/tiffany` lands on the
+homepage rather than the same path (owner's browser, cause unknown, left alone; myshopify 429s curl).
+Newsletter verified on the live domain and UptimeRobot moved to live URLs (owner, 2026-11-02);
+#28 merged. Launch post is `/journal/new-website-holiday-jewelry-drop`. Owner kept New Arrivals
+live, reversing a brief plan to hide it. Instagram is the only social account (owner) — `SOCIAL_LINKS` in `constants.ts`.
+
+**Older status: the DNS cutover is the only thing between `main` and a live site.** On
+2026-10-01 the owner was walked through the remaining operator steps one at a time and finished
+checkout colours, POS, Vercel Analytics and UptimeRobot. They **paused at `launch-checklist.md` §2
+step 1** (lower the DNS TTL to 300s + record the existing `@`/`www` records) and will come back
+when they have time. That step is **not confirmed done**. The DNS for `preciousjewels.co` is
+**managed by Shopify** (Settings → Domains → the domain → DNS settings — check whether a TTL field
+exists and whether `@`/`www` can be pointed at Vercel there); the **go-live date is TBD**. Resume by
+guiding them **one step at a time** (their preference this session): TTL → wait 24h → Vercel
+Domains → remove store password → Shopify primary domain → registrar records → §3 verify
+(including swapping the two UptimeRobot monitors to `preciousjewels.co`). The site launches in
+pre-drop mode, so §3's add-to-cart and real-card checks move to drop day (§6).
 
 **Milestone 0 (Foundations) — complete.** Storefront scaffolded, connected to Shopify, live on
 Vercel, CI green, `main` protected.
@@ -122,7 +154,7 @@ opted-out existing customer isn't re-subscribed; `customerCreate` is rate-limite
   inventory — so the owner's **real stock counts stay untouched** — and `addItemAction` throws.
   This only blocks purchases through _this_ site; Shopify itself would still sell the items.
 - **At the drop: set `DROP_PENDING = false`** and redo the homepage copy (hero eyebrow "First drop
-  November 2026", CTAs "Preview the drop" / "Get first access", "Coming in the drop", newsletter
+  November 2026", CTAs "Preview our merch" / "Get first access", "Coming in the drop", newsletter
   blurb — hardcoded in `page.tsx`, not flag-driven).
 
 **Launch catalogue = a teaser (owner, 2026-10-01): 34 products published to the Headless channel**
@@ -160,7 +192,7 @@ Shopify admin; we just render it — **no CMS**.
 - Routes (all SSG, ISR 900s): `/pages/[handle]` (about-us, faqs, sizing-chart, contact-us-1,
   wholesale — contact gets a `mailto:` CTA), `/policies/[handle]` (privacy-policy, refund-policy,
   terms-of-service, shipping-policy — empty policy → contact-line fallback), `/journal` (empty
-  state) + `/journal/[handle]` (`dynamicParams=false`, 0 articles today).
+  state) + `/journal/[handle]` (renders new articles on demand since #28, so posts need no redeploy).
 - `Footer` rebuilt (Shop / Company / Help columns + Privacy/Terms bottom bar); header nav gained
   Journal + About. `src/app/sitemap.ts` enumerates everything.
 
@@ -405,24 +437,32 @@ fetch failed` means the request never got there — almost always a malformed `S
 
 ## Next steps (pick up here)
 
-Everything through M5 code is merged; `main` is deployable. Options for the next session, in
-likely priority order:
+`main` is deployed and launch-ready in pre-drop mode. In order:
 
-1. **Support the launch.** The owner works `docs/launch-checklist.md`. Claude tasks that may come
-   up: create a real 1200×630 OG image (`src/app/opengraph-image.png`) + wire it in `layout.tsx`;
-   a proper logo for the `Organization` JSON-LD; add redirects for URLs a live-site crawl turns
-   up; help debug the cutover.
-2. **Milestone 4 — search & merchandising.** Shopify Search & Discovery app powers `search()` +
+1. **Finish the launch — the DNS cutover.** See "Pick up here" at the top of Current status and
+   `docs/launch-checklist.md` ("Where we are" block, then §2–§3). Guide the owner one step at a
+   time. Claude tasks likely to come up: exact record instructions once the DNS provider is known;
+   debugging the cutover; the old-theme redirect stub (§2 last item); redirects for URLs that
+   Search Console turns up.
+2. **Drop day (late November 2026)** — `launch-checklist.md` §6. One PR: `DROP_PENDING = false` +
+   rewrite the pre-drop homepage copy; merge only after the owner has published the full catalogue
+   to the Headless channel; then the real-card test order.
+3. **Before the drop, if wanted:** photo wall / more editorial sections (needs individual full-res
+   on-model shots of real SKUs — the AI prompts are in the 2026-10-01 session; see the
+   `guava-accent-direction` memory), a per-product "notify me", a mobile nav drawer.
+4. **Milestone 4 — search & merchandising.** Shopify Search & Discovery app powers `search()` +
    filter facets via the Storefront API. Build `/search` (replace the `/search → /collections`
    redirect), predictive search in the header, faceted filtering on collection pages (URL state),
    related products on the PDP, a reviews integration (Judge.me / metaobjects). See ROADMAP M4.
-3. **Milestone 3b — headless customer accounts.** Customer Account API (OAuth). Needs Shopify
+5. **Milestone 3b — headless customer accounts.** Customer Account API (OAuth). Needs Shopify
    admin config first. See ROADMAP M3.
-4. **Backlog** — Instagram → journal feed (`instagram-to-blog-idea` memory), contact form,
-   newsletter capture, mobile nav drawer, sticky mobile add-to-cart, real hero photography.
+6. **Backlog** — Instagram → journal feed (`instagram-to-blog-idea` memory), contact form, sticky
+   mobile add-to-cart, re-subscribing opted-out customers (needs an Admin API token).
 
 **Working process:** plan mode → plan file → approval → staged PRs, each with a code commit + a
-docs commit → CI green → user clicks the Vercel preview → merge. Live GraphQL probes (a scratch
+docs commit → CI green → user clicks the Vercel preview → merge. In the 2026-10-01 session the
+owner skipped plan mode for small changes: Claude made the change on a branch, verified it, and
+waited for the word "commit" before committing and opening the PR; the owner rebase-merges. Live GraphQL probes (a scratch
 `.mjs` reading `.env.local`) to de-risk the Shopify surface before writing the data layer.
 **Browser-verify every UI PR** in headless Opera (`--headless --dump-dom --enable-logging=stderr`,
 also `--screenshot`) — CI and SSR checks miss client-runtime and visual breakage (the M2 white

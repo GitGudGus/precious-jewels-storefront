@@ -6,6 +6,36 @@ live.
 
 ---
 
+## Where we are (2026-11-01) — read this to pick up
+
+**Fully live as of 2026-11-02: redirect stub published, products off the Online Store, password
+removed.** §3 done (newsletter + UptimeRobot verified by the owner). Left: §6 on drop day. The 2026-10-01 notes below are
+history.
+
+## 2026-10-01 notes
+
+**Everything in §1 (pre-cutover) is done except the optional `axe` / VoiceOver pass.** The owner
+paused at the very start of §2. What is left, in order:
+
+1. **§2 step 1 — lower the DNS TTL to 300s and write down the current records.** Instructions
+   were given on 2026-10-01; **the owner has not confirmed doing it** — treat it as not done.
+2. **DNS is managed by Shopify** (owner, 2026-10-01) — records are edited in Shopify admin →
+   Settings → Domains → `preciousjewels.co` → DNS settings, not at an outside registrar. Two
+   things to check there when we resume: whether Shopify's editor exposes a TTL field at all (if
+   not, skip the TTL step and expect propagation to take as long as Shopify's fixed TTL), and
+   that it lets the `@` A record and `www` CNAME be pointed at Vercel while the domain is still
+   connected to the store. **Go-live date: TBD** — needs a quiet ~30-minute window.
+3. **§2 — the cutover**, at least 24 hours after the TTL change.
+4. **§3 — verify live**, noting the pre-drop caveats there (no add-to-cart, no real-card order).
+5. **§6 — drop day** (late November 2026): flip `DROP_PENDING`, re-publish the catalogue, real-card
+   test.
+
+**The site launches in "pre-drop" mode** (owner's plan): 34 teaser products, every one showing
+"Coming soon", nothing purchasable, the newsletter form as the only call to action. The site runs
+about a month collecting analytics, then the first drop goes live. See §6.
+
+---
+
 ## 0. The checkout domain — read this first
 
 Shopify serves checkout from its **primary domain**, and `cart.checkoutUrl` is issued on that
@@ -59,11 +89,12 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       every other sales channel), all showing "Coming soon" via `DROP_PENDING`. — 2026-10-01.
 - [x] Order confirmation + shipping-notification emails reviewed (Settings → Notifications) — logo,
       from-address, links point at `preciousjewels.co`. — 2026-09-04: owner confirmed correct.
-- [ ] **Checkout branding → Guava.** Settings → Checkout → Customize (checkout editor). Set the
+- [x] **Checkout branding → Guava.** Settings → Checkout → Customize (checkout editor). Set the
       primary/action button + accent colour to `#b1462c` (matches the storefront's `accent-deep`
       CTAs; AA on the white checkout ground). The Shopify-hosted checkout keeps its own styling —
       this is the only place to bring it in line with the site. (2026-09-10: owner flagged the
-      "Pay now" button still looks like default Shopify.)
+      "Pay now" button still looks like default Shopify.) — 2026-10-01: owner set the checkout
+      colours in the checkout editor.
 - [x] Tax: Settings → Taxes — Florida nexus set; spot-check tax on a FL address vs an out-of-state
       address at checkout. — 2026-09-04: owner confirmed "tax looks good."
 - [ ] Store password removed (Online Store → Preferences) — do this at cutover, not before.
@@ -74,8 +105,11 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 - [x] Decide the checkout primary domain (§0): `shop-precious-jewels.myshopify.com` (simple) or
       `preciousjewelsmia.com` (branded). **Don't change it yet** — that's a §2 step. — going with
       `shop-precious-jewels.myshopify.com`.
-- [ ] Confirm the owner can still take payments in **Shopify POS** at pop-ups (unaffected by
-      headless, but confirm before launch day).
+- [x] Confirm the owner can still take payments in **Shopify POS** at pop-ups (unaffected by
+      headless, but confirm before launch day). — 2026-10-01: the owner had removed every product
+      from every sales channel except Headless while curating the teaser catalogue, which would
+      have emptied the POS app too. All products are back on the **Point of Sale** channel; the
+      website still sees only the 34 Headless products (verified via the Storefront API).
 
 ### Vercel
 
@@ -84,7 +118,8 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       **blank** for the `.myshopify.com` option. — 2026-09-04: both Shopify vars present; both
       Sentry vars added this session; `SHOPIFY_CHECKOUT_DOMAIN` left blank.
 - [x] Latest `main` deployed green to Production. — 2026-09-04.
-- [ ] Vercel Analytics + Speed Insights showing data on the current preview URL.
+- [x] Vercel Analytics + Speed Insights showing data on the current preview URL. — 2026-10-01:
+      owner confirmed both tabs show data.
 
 ### SEO / content
 
@@ -156,17 +191,26 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       2026-09-04: Sentry project + org auth token created, both env vars in Vercel (Production +
       Preview), verified end-to-end with a temporary `/sentry-test` throw route on a preview
       deploy — error landed in Sentry as unhandled; route deleted after.
-- [ ] UptimeRobot (free) monitors on `https://preciousjewels.co/` and one PDP — 5-min interval,
+- [x] UptimeRobot (free) monitors on `https://preciousjewels.co/` and one PDP — 5-min interval,
       alert to the owner's email/SMS. (2026-09-04: deferred within this session; Production on
       Vercel is *not* behind deployment protection — only Preview deploys are — so monitoring
       `precious-jewels-phi.vercel.app` now and swapping the URLs to `preciousjewels.co` at cutover
-      works fine. Just not set up yet.)
+      works fine. Just not set up yet.) — 2026-10-01: two monitors created and "Up":
+      `https://precious-jewels-phi.vercel.app/` and `…/products/tiffany`. **At cutover, edit both
+      to `https://preciousjewels.co/…`** (it's a §3 step).
 
 ---
 
 ## 2. Cutover (launch window — pick a low-traffic hour)
 
-- [ ] **1 day before:** lower the TTL on `preciousjewels.co` + `www` DNS records to 300s.
+- [ ] **1 day before:** lower the TTL on `preciousjewels.co` + `www` DNS records to 300s, and
+      **write down / screenshot every existing `@` and `www` record first** (type, name, value,
+      TTL) — that's the rollback copy for §4. Change only the TTL; leave the values pointing at
+      Shopify. (2026-10-01: instructions given, **not confirmed done**. DNS is Shopify-managed —
+      Settings → Domains → `preciousjewels.co` → DNS settings; the TTL may not be editable there.)
+      **Rollback copy (2026-11-01):** `@` A `23.227.38.32`; `@` AAAA `2620:0127:f00f:3::`; `www`
+      CNAME `shops.myshopify.com`. At the switch, the AAAA must go too, or IPv6 visitors stay on
+      Shopify. Leave the MX, TXT and `mailer`/`_domainkey` CNAME records alone (email).
 - [ ] In Vercel → project → Domains: add `preciousjewels.co` and `www.preciousjewels.co`. Vercel
       shows the exact records needed. (Don't switch DNS yet — just have the records ready.)
 - [ ] Remove the store password (Online Store → Preferences).
@@ -175,7 +219,7 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       next step.
 - [ ] At the registrar: point apex + `www` at Vercel (A/ALIAS/ANAME per Vercel's instructions).
 - [ ] Wait for propagation (minutes at 300s TTL). Vercel domain status → "Valid Configuration".
-- [ ] **Replace the old Online Store theme with a redirect stub.** After cutover, checkout runs on
+- [x] **Replace the old Online Store theme with a redirect stub.** _(Done 2026-11-02: checkout and `/account` tested; `/cart/*` covered by the checkout test.)_ After cutover, checkout runs on
       `shop-precious-jewels.myshopify.com`, and Shopify's checkout logo links back to that domain's
       Online Store — i.e. the *old theme*. Also any old bookmark / crawler hitting the myshopify
       domain sees the stale theme. Fix: publish a bare theme whose `layout/theme.liquid` is just a
@@ -188,7 +232,13 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
 ## 3. Verify live (immediately after)
 
 - [ ] `https://preciousjewels.co/` loads the new storefront (hard refresh / incognito).
-- [ ] A PDP loads; add to cart; drawer opens; **Checkout → `shop-precious-jewels.myshopify.com`
+- [ ] Edit both UptimeRobot monitors to `https://preciousjewels.co/` and
+      `https://preciousjewels.co/products/tiffany`.
+- [ ] Newsletter: sign up with a fresh address on the live domain; it appears as **Subscribed** in
+      Shopify admin → Customers.
+- [ ] _(Drop day — not possible while `DROP_PENDING` is on; at launch just confirm a PDP loads and
+      shows "Coming soon" + the "Get first access to the drop" link.)_ A PDP loads; add to cart;
+      drawer opens; **Checkout → `shop-precious-jewels.myshopify.com`
       → `shop.app`**, Shopify checkout loads (no 404, no bounce to `preciousjewels.co`).
 - [ ] **Place one real order with a real card** — **moved to drop day** (2026-10-01): nothing is
       purchasable while `DROP_PENDING` is on, so do this right after the flag is flipped. Complete
@@ -221,6 +271,27 @@ re-canonicalising. So: change the primary and switch the DNS back-to-back (steps
       needs a cookie-consent banner.
 - [ ] Revisit the deferred items: M3b customer accounts, M4 search, a real contact form,
       newsletter capture, Instagram → journal feed.
+
+## 6. Drop day (late November 2026)
+
+The site is live but in pre-drop mode until this runs. Do it in this order.
+
+- [ ] **Shopify admin:** publish the full drop catalogue to the **Headless** sales channel
+      (Products → select → Bulk actions → Include in sales channels → Headless). Check inventory
+      counts are right — they were never zeroed, the site just hides availability.
+- [ ] **Code (one PR):** set `DROP_PENDING = false` in `src/lib/shopify/constants.ts`, and rewrite
+      the hardcoded pre-drop homepage copy in `src/app/page.tsx` (hero eyebrow "Miami · First drop
+      November 2026", CTAs "Preview our merch" / "Get first access", "Coming in the drop", the
+      newsletter blurb, and the success message in `src/components/newsletter/actions.ts`).
+- [ ] **Merge → the deploy is what makes it live.** `dynamicParams = false` means the newly
+      published products only get pages on a new build, so the merge must come _after_ the
+      catalogue is published. Listings alone would follow within 15 minutes (ISR).
+- [ ] Spot-check: a PDP shows "Add to cart"; the drawer opens; **Checkout →
+      `shop-precious-jewels.myshopify.com` → `shop.app`** loads.
+- [ ] **Place one real order with a real card**, confirm tax + shipping in Shopify admin and the
+      confirmation email, check Klarna / Afterpay show as payment options, then refund it.
+- [ ] Email the newsletter list (Shopify Email → customers with marketing consent).
+- [ ] Decide whether the gift card (currently one of the 34 teaser products) should be on sale.
 
 ---
 
