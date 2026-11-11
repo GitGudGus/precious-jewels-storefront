@@ -91,7 +91,40 @@
     transform: none;
   }
 
+  /* Announcement strip (HeaderBar). */
+  .marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Back-soon page snowfall. */
+  .snowflake {
+    position: absolute;
+    top: -2rem;
+    animation: snowfall linear infinite;
+  }
+
+  @keyframes snowfall {
+    to {
+      top: 105%;
+      transform: translateX(2rem) rotate(180deg);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      animation: none;
+    }
+
+    .snowflake {
+      display: none;
+    }
+
     .reveal {
       opacity: 1;
       transform: none;

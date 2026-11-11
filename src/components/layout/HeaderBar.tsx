@@ -4,12 +4,16 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { CartButton } from '@/components/cart/CartButton';
-import { FREE_SHIPPING_THRESHOLD } from '@/lib/shopify/constants';
-import { formatPrice } from '@/lib/shopify/format';
 
 type NavItem = { href: string; label: string };
 
-const ANNOUNCEMENT = `♡ Free shipping on orders over ${formatPrice(FREE_SHIPPING_THRESHOLD)} ♡`;
+// Holiday pause (2026-11-10). At relaunch restore the single free-shipping line:
+// `♡ Free shipping on orders over ${formatPrice(FREE_SHIPPING_THRESHOLD)} ♡`.
+const ANNOUNCEMENTS = [
+  '❄ Holiday restock arriving in December',
+  'Follow @preciousjewelsmia on Instagram',
+  'Join the list for first access',
+];
 
 export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
   const [scrolled, setScrolled] = useState(false);
@@ -22,8 +26,21 @@ export function HeaderBar({ navItems }: { navItems: NavItem[] }) {
 
   return (
     <header className="sticky top-0 z-40">
-      <div className="bg-ink px-4 py-2 text-center text-[10px] tracking-[0.2em] text-ink-invert uppercase">
-        {ANNOUNCEMENT}
+      <div className="overflow-hidden bg-ink py-2 text-[10px] tracking-[0.2em] text-ink-invert uppercase">
+        {/* Two identical copies; sliding by half the track loops seamlessly. */}
+        <div className="marquee flex w-max">
+          {[0, 1].map((copy) => (
+            <p
+              key={copy}
+              aria-hidden={copy === 1}
+              className="flex shrink-0 gap-12 pr-12 whitespace-nowrap"
+            >
+              {ANNOUNCEMENTS.map((text) => (
+                <span key={text}>{text}</span>
+              ))}
+            </p>
+          ))}
+        </div>
       </div>
 
       <div className="border-b border-line bg-bg/95 backdrop-blur">
