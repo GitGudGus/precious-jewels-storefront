@@ -19,7 +19,16 @@ cheap later.
 
 ## Current status (as of 2026-10-01)
 
-**▶ Pick up here (2026-11-02): FULLY LIVE on `preciousjewels.co` via Vercel (project
+**▶ Pick up here (2026-11-10): PAUSED until a December restock (#30).** The owner took the site down
+to get new merch, prices and photos. The domain stays on Vercel; `src/proxy.ts` rewrites every page to
+`/back-soon` ("Back in December": newsletter + Instagram + CSS snowfall), and the announcement strip
+is a rolling holiday banner. Shopify store password is back on; the stub theme stays published.
+**Relaunch = one PR:** delete `src/proxy.ts` + `src/app/back-soon/`, restore the free-shipping
+announcement (original line in a `HeaderBar.tsx` comment), refresh homepage copy; then the drop-day
+steps in `launch-checklist.md` §6. Owner may also check other sales channels (Shop, Facebook &
+Instagram, Google & YouTube) still list products.
+
+**Previous (2026-11-02): FULLY LIVE on `preciousjewels.co` via Vercel (project
 `preciousjewels-mia`, team `herp-derpers`), store password removed.** Primary domain = myshopify;
 `@` A → `216.198.79.1`, AAAA deleted, `www` CNAME → Vercel (308 to the apex). Old theme = a published
 duplicate whose `layout/theme.liquid` is a redirect stub (original kept as rollback); non-teaser
